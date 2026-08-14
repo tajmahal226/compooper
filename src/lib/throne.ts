@@ -1,22 +1,31 @@
 import type { ToiletStats } from "@/lib/community";
 import type { Mood } from "@/lib/geo";
-import type { Toilet } from "@/lib/toilets";
+import { isUpscale, venueText, type Toilet } from "@/lib/toilets";
 
 /**
- * Venue quality, read out of the OSM name/operator/description text.
+ * Venue class, read out of the OSM name/operator/description text.
  *
  * This is the core of the Compooper thesis and the main thing that separates it
- * from Compisser: Compisser answers "where is the nearest toilet" (pee, urgent,
- * proximity wins). Compooper answers "where is a toilet worth sitting in" —
- * which in practice means somewhere ATTENDED. A venue that has staff, a cleaning
- * rota and a reputation to protect beats a council block in a park every time,
- * even when the park one is closer and free.
+ * from Compisser. Compisser answers "where is the nearest toilet" (pee, urgent,
+ * proximity wins). Compooper answers "where is a bathroom worth sitting in", and
+ * the axis there is CLEANLINESS, not cost or distance.
+ *
+ * The reliable proxy for cleanliness is a venue whose brand depends on it: a
+ * hotel, a high-end department store, a proper restaurant. Those may be free,
+ * may expect a purchase, or may be technically guests-only — the access model is
+ * incidental, and is surfaced to the user rather than scored.
  */
-const UPSCALE =
-  /hotel|museum|gallery|library|department store|spa|theatre|theater|opera|restaurant|cafe|café|lounge|club|hall|airport|terminal|john lewis|selfridges|harrods|waitrose/;
+const UPSCALE_BONUS = 22;
 
-/** Indoor, staffed, generally maintained — good, but a step below the above. */
-const DECENT = /mall|shopping|centre|center|visitor|garden|station|arcade|market/;
+/** Indoor and staffed, but no reputation riding on the bathrooms. */
+const DECENT = /mall|shopping|arcade|market hall|food hall|grand central|terminal|airport/;
+
+/**
+ * Free, pleasant, frequently nearby — and deliberately NOT the product. A public
+ * library is a fine place to pee and a poor answer to "where should I take my
+ * time". Scored flat so it can never be mistaken for the upscale tier.
+ */
+const CIVIC = /library|town hall|city hall|community cent|leisure cent|civic|council|parish/;
 
 /**
  * Actively grim for a sit-down. `urinal` is disqualifying rather than merely bad
@@ -28,10 +37,25 @@ const GRIM = /porta|portable|pit latrine|chemical|urinal|bushes|beach hut|layby|
 export function throneScore(t: Toilet, stats?: ToiletStats): number {
   let s = 38;
 
-  // Paying is a QUALITY SIGNAL here, not a cost to avoid. A turnstile or an
-  // attendant means someone is restocking the paper and mopping the floor;
-  // Compisser's free-first instinct is exactly backwards for a proper sit.
-  if (t.free === false) s += 12;
+  const hay = venueText(t);
+  const civic = CIVIC.test(hay);
+
+  // Venue class carries the score. Civic buildings are excluded from the upscale
+  // tier even when their name would otherwise match (a "Town Hall Hotel" is the
+  // rare false positive; a council library is the common one).
+  if (!civic && isUpscale(t)) s += UPSCALE_BONUS;
+  else if (!civic && DECENT.test(hay)) s += 8;
+  if (GRIM.test(hay)) s -= 24;
+
+  // Cost is only a weak correlate of "someone attends this" — a paid turnstile
+  // usually means a cleaner, but the venue above already says it better.
+  if (t.free === false) s += 5;
+
+  // Hard facts about the cubicle itself, when OSM actually has them.
+  if (t.position === "seated") s += 10;
+  if (t.position === "squat" || t.position === "urinal") s -= 30;
+  if (t.paper === true) s += 8;
+  if (t.paper === false) s -= 10;
 
   // Proxies for a real, private, maintained cubicle rather than a trough.
   if (t.accessible) s += 8; // full-size lockable stall with room to manoeuvre
@@ -39,11 +63,6 @@ export function throneScore(t: Toilet, stats?: ToiletStats): number {
   if (t.allGender) s += 3; // usually a self-contained lockable room
   if (t.openingHours) s += 4; // published hours means someone manages it
   if (t.operator) s += 4; // a named owner is a cleaning rota
-
-  const hay = `${t.operator ?? ""} ${t.name} ${t.description ?? ""}`.toLowerCase();
-  if (UPSCALE.test(hay)) s += 18;
-  else if (DECENT.test(hay)) s += 8;
-  if (GRIM.test(hay)) s -= 24;
 
   // Community signal outranks every heuristic above — someone actually sat here.
   if (stats?.avgRolls) s += stats.avgRolls * 8;

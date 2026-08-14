@@ -39,21 +39,28 @@ export const BRANDS: Record<BrandId, Brand> = {
     sister: {
       name: "Compisser",
       href: "https://github.com/tajmahal226/compisser",
-      blurb: "Sister of Compisser, the emergency toilet finder.",
+      blurb: "Sister of Compisser, the emergency finder for when you just need to pee.",
     },
   },
 };
 
 const BrandContext = createContext<BrandId>("compooper");
 
-export function BrandProvider({ brand = "compooper", children }: { brand?: BrandId; children: ReactNode }) {
-  return (
-    <BrandContext.Provider value={brand}>
-      <div data-brand={brand} className="min-h-dvh">
-        {children}
-      </div>
-    </BrandContext.Provider>
-  );
+/**
+ * Brand context only — the `data-brand` ATTRIBUTE lives on `<html>` in
+ * `__root.tsx`, not on a wrapper div here. `body` paints the page gradient from
+ * `--bg-top`/`--bg-bottom`, so scoping the tokens to a div left `body` reading
+ * `:root` (Compisser's blue-green) and shipped warm cards on a cold page.
+ * Setting it on `<html>` during SSR also avoids a first-paint flash.
+ */
+export function BrandProvider({
+  brand = "compooper",
+  children,
+}: {
+  brand?: BrandId;
+  children: ReactNode;
+}) {
+  return <BrandContext.Provider value={brand}>{children}</BrandContext.Provider>;
 }
 
 export function useBrandId(): BrandId {

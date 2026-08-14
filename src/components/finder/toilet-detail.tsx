@@ -8,12 +8,28 @@ import type { Toilet } from "@/lib/toilets";
 import { FacilityBadges, LooRolls } from "./facility-badges";
 
 const CONDITIONS: { id: ConditionStatus; label: string }[] = [
-  { id: "open", label: "Open" },
+  { id: "open", label: "Clean & open" },
   { id: "closed", label: "Closed" },
   { id: "queueing", label: "Queueing" },
-  { id: "out_of_paper", label: "Out of paper" },
+  { id: "out_of_paper", label: "No paper" },
   { id: "out_of_order", label: "Out of order" },
 ];
+
+/** Access is surfaced, never hidden — upscale venues are frequently gated. */
+const ACCESS_LABEL: Record<string, string> = {
+  public: "Open to all",
+  customers: "Customers only",
+  guests: "Hotel guests",
+  private: "Private",
+  unknown: "Just walk in (probably)",
+};
+
+const POSITION_LABEL: Record<string, string> = {
+  seated: "Sit-down",
+  squat: "Squat pan",
+  urinal: "Urinal only",
+  unknown: "Not listed",
+};
 
 type Props = {
   toilet: Toilet | null;
@@ -52,11 +68,10 @@ export function ToiletDetail({
       {!toilet ? (
         <div className="grid h-full place-items-center content-center px-8 text-center">
           <img src={brand.mascot} alt="" className="mb-4 w-[108px] drop-shadow-lg" />
-          <h2 className="mb-2 text-[1.35rem] font-extrabold">
-            {brand.id === "compooper" ? "Pick a throne" : "Choose a toilet"}
-          </h2>
+          <h2 className="mb-2 text-[1.35rem] font-extrabold">Pick a throne</h2>
           <p className="m-0 text-[0.82rem] text-muted">
-            Select one from the map or nearby list to see its facilities and directions.
+            Pick one from the map or the nearby list to see how clean it is, how you get in, and how
+            far the walk is.
           </p>
         </div>
       ) : (
@@ -95,18 +110,20 @@ export function DetailBody({
     <div>
       <div
         className={
-          brand.id === "compooper"
-            ? "relative flex h-[200px] items-end justify-center overflow-hidden rounded-b-[38%] bg-linear-to-b from-orange-200 to-amber-600 dark:from-stone-800 dark:to-amber-950"
-            : "relative flex h-[200px] items-end justify-center overflow-hidden rounded-b-[38%] bg-linear-to-b from-sky-200 to-lime-400 dark:from-slate-700 dark:to-emerald-900"
+          "relative flex h-[200px] items-end justify-center overflow-hidden rounded-b-[38%] bg-linear-to-b from-orange-200 to-amber-600 dark:from-stone-800 dark:to-amber-950"
         }
       >
         <span className="absolute top-6 right-8 size-10 rounded-full bg-amber-300 shadow-[0_0_0_10px_rgba(251,191,36,0.18)]" />
-        <img src={brand.mascot} alt="" className="relative z-1 h-[160px] object-contain drop-shadow-lg" />
+        <img
+          src={brand.mascot}
+          alt=""
+          className="relative z-1 h-[160px] object-contain drop-shadow-lg"
+        />
       </div>
       <div className="p-5">
         <div className="flex items-start justify-between gap-2">
           <span className="inline-flex rounded-full bg-blue-soft px-2 py-1 text-[10px] font-extrabold text-blue">
-            {brand.id === "compooper" ? `${throneLabel(sit)} · ${sit}` : toilet.source === "OpenStreetMap" ? "OpenStreetMap" : "Compisser"}
+            {`${throneLabel(sit)} · ${sit}`}
           </span>
           <button
             type="button"
@@ -130,8 +147,8 @@ export function DetailBody({
             <h3 className="m-0 text-[0.88rem] font-bold text-navy">Cleanliness</h3>
             <p className="m-0 mt-0.5 text-[0.67rem] text-muted">
               {stats?.ratingCount
-                ? `Rated in loo rolls by ${stats.ratingCount} ${stats.ratingCount === 1 ? "person" : "people"}`
-                : "No community rating yet"}
+                ? `Rated in loo rolls by ${stats.ratingCount} ${stats.ratingCount === 1 ? "sitter" : "sitters"}`
+                : "Nobody has sat here yet"}
             </p>
           </div>
           <LooRolls value={stats?.avgRolls ?? null} count={stats?.ratingCount ?? 0} />
@@ -144,15 +161,35 @@ export function DetailBody({
             </dd>
           </div>
           <div className="flex justify-between gap-4 py-3">
+            <dt className="text-[0.72rem] text-muted">Getting in</dt>
+            <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+              {ACCESS_LABEL[toilet.access ?? "unknown"]}
+            </dd>
+          </div>
+          <div className="flex justify-between gap-4 py-3">
             <dt className="text-[0.72rem] text-muted">Cost</dt>
             <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
-              {toilet.free === true ? "Free" : toilet.fee ? toilet.fee : "Unknown"}
+              {toilet.free === true
+                ? "Free"
+                : toilet.fee === "yes"
+                  ? "Paid"
+                  : toilet.fee
+                    ? toilet.fee
+                    : "Unknown"}
+            </dd>
+          </div>
+          <div className="flex justify-between gap-4 py-3">
+            <dt className="text-[0.72rem] text-muted">Cubicle</dt>
+            <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+              {POSITION_LABEL[toilet.position ?? "unknown"]}
             </dd>
           </div>
           {toilet.operator && (
             <div className="flex justify-between gap-4 py-3">
               <dt className="text-[0.72rem] text-muted">Operator</dt>
-              <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">{toilet.operator}</dd>
+              <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+                {toilet.operator}
+              </dd>
             </div>
           )}
         </dl>
@@ -165,7 +202,7 @@ export function DetailBody({
         {signedIn ? (
           <div className="mb-4 space-y-3">
             <div>
-              <p className="mb-1.5 text-[0.72rem] font-bold text-navy">Rate cleanliness</p>
+              <p className="mb-1.5 text-[0.72rem] font-bold text-navy">Rate the sit</p>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
@@ -181,7 +218,7 @@ export function DetailBody({
               </div>
             </div>
             <div>
-              <p className="mb-1.5 text-[0.72rem] font-bold text-navy">Update conditions</p>
+              <p className="mb-1.5 text-[0.72rem] font-bold text-navy">Report conditions</p>
               <div className="flex flex-wrap gap-1">
                 {CONDITIONS.map((c) => (
                   <button
@@ -207,7 +244,7 @@ export function DetailBody({
             <span className="min-w-0 flex-1">
               <strong className="block text-[0.72rem] text-navy">Sign in to contribute</strong>
               <small className="text-[0.6rem] leading-snug text-muted">
-                Leave a loo-roll rating or a live condition report.
+                Rate the sit, or warn the next person about the paper situation.
               </small>
             </span>
           </Link>
@@ -217,7 +254,10 @@ export function DetailBody({
           target="_blank"
           rel="noopener noreferrer"
           className="sticky bottom-0 z-1 -mx-5 mt-2 flex h-12 items-center justify-between bg-blue px-5 font-extrabold text-white no-underline hover:bg-blue-dark"
-          style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))", minHeight: "calc(3rem + env(safe-area-inset-bottom))" }}
+          style={{
+            paddingBottom: "max(0px, env(safe-area-inset-bottom))",
+            minHeight: "calc(3rem + env(safe-area-inset-bottom))",
+          }}
         >
           {brand.detailCta}
           <span aria-hidden="true">↗</span>

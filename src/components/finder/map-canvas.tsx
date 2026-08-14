@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { Toilet } from "@/lib/toilets";
+import { isUpscale, type Toilet } from "@/lib/toilets";
 import type { LatLng } from "@/lib/geo";
 
 const STYLE = "https://tiles.openfreemap.org/styles/liberty";
@@ -85,7 +85,7 @@ export function MapCanvas({ origin, toilets, selectedId, nearestId, onSelect }: 
         btn.type = "button";
         btn.className = [
           "toilet-marker",
-          t.accessible ? "is-accessible" : "",
+          isUpscale(t) ? "is-upscale" : "",
           t.id === nearestId ? "is-nearest" : "",
           t.id === selectedId ? "is-selected" : "",
         ]
@@ -128,5 +128,5 @@ export function MapCanvas({ origin, toilets, selectedId, nearestId, onSelect }: 
     map.easeTo({ center: [selected.lng, selected.lat], duration: 450 });
   }, [selectedId, toilets]);
 
-  return <div ref={containerRef} className="finder-map" aria-label="Map of nearby public toilets" />;
+  return <div ref={containerRef} className="finder-map" aria-label="Map of nearby bathrooms" />;
 }

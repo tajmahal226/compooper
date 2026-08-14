@@ -1,6 +1,5 @@
 import { Navigation } from "lucide-react";
-import { useBrandId } from "@/lib/brand";
-import { distanceMood, formatDistance, formatWalk } from "@/lib/geo";
+import { formatDistance, formatWalk } from "@/lib/geo";
 import { dumpMood } from "@/lib/throne";
 import { cn } from "@/lib/utils";
 
@@ -23,19 +22,29 @@ export function CompassDial({
   heading,
   targetBearing,
   distance,
-  name = "Nearest toilet",
+  name = "Nearest throne",
   nearby = [],
   compact = false,
 }: Props) {
   const relative = ((targetBearing - heading + 540) % 360) - 180;
   const ringRot = -heading;
-  const mood = useBrandId() === "compooper" ? dumpMood(distance) : distanceMood(distance);
+  const mood = dumpMood(distance);
 
   return (
-    <div className={cn("flex h-full flex-col items-center justify-between px-4 pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.75rem))] pb-24", compact && "pt-6 pb-4")}>
+    <div
+      className={cn(
+        "flex h-full flex-col items-center justify-between px-4 pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.75rem))] pb-24",
+        compact && "pt-6 pb-4",
+      )}
+    >
       <div className="text-center">
         <p className="text-[0.7rem] font-bold tracking-[0.14em] text-blue uppercase">{name}</p>
-        <p className={cn("mt-1 font-extrabold text-navy tabular-nums", compact ? "text-3xl" : "text-4xl")}>
+        <p
+          className={cn(
+            "mt-1 font-extrabold text-navy tabular-nums",
+            compact ? "text-3xl" : "text-4xl",
+          )}
+        >
           {formatDistance(distance)}
         </p>
         <p className="text-sm font-medium text-muted">{formatWalk(distance)}</p>
@@ -43,10 +52,7 @@ export function CompassDial({
 
       <div className={cn("relative", compact ? "size-[200px]" : "size-[240px] sm:size-[268px]")}>
         <div className="absolute inset-0 rounded-full border border-card-border bg-card/70 shadow-(--shadow-sm) backdrop-blur-sm">
-          <div
-            className="absolute inset-0"
-            style={{ transform: `rotate(${ringRot}deg)` }}
-          >
+          <div className="absolute inset-0" style={{ transform: `rotate(${ringRot}deg)` }}>
             <span className="absolute top-2.5 left-1/2 -translate-x-1/2 text-[11px] font-extrabold text-navy">
               N
             </span>

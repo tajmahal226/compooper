@@ -68,7 +68,9 @@ html[data-theme="dark"] {
   --shadow-sm: 0 4px 14px -8px rgba(44, 24, 16, 0.22);
 }
 
-html[data-theme="dark"] [data-brand="compooper"] {
+/* Both attributes sit on <html> (see BrandProvider) — must be a compound
+   selector, not a descendant one, or the dark brand tokens never apply. */
+html[data-theme="dark"][data-brand="compooper"] {
   --bg-top: #1a100c;
   --bg-bottom: #2a1810;
   --navy: #f6e8d8;
@@ -280,28 +282,32 @@ html[data-theme="dark"] [data-brand="compooper"] {
     display: none;
   }
 }
+/* Marker colours come from brand tokens, not literals — Compisser's green/blue
+   pins on Compooper's warm map were the last of the sister app's palette. The
+   highlighted class is UPSCALE, not accessible: on this app the venue class is
+   what you scan the map for. */
 .toilet-marker {
   width: 44px;
   height: 44px;
-  border: 3px solid #fff;
+  border: 3px solid var(--card);
   border-radius: 50%;
-  background: #22c55e;
+  background: var(--slate-light);
   box-shadow: 0 6px 14px -6px rgba(15, 23, 42, 0.5);
   display: grid;
   place-items: center;
   padding: 0;
   touch-action: manipulation;
 }
-.toilet-marker.is-accessible {
-  background: #2563eb;
+.toilet-marker.is-upscale {
+  background: var(--blue);
 }
 .toilet-marker.is-nearest {
   width: 50px;
   height: 50px;
-  background: #2563eb;
+  background: var(--blue-dark);
 }
 .toilet-marker.is-selected {
-  outline: 4px solid color-mix(in srgb, #2563eb 35%, transparent);
+  outline: 4px solid color-mix(in srgb, var(--blue) 35%, transparent);
   transform: translateY(-2px) scale(1.06);
 }
 .toilet-marker svg {
@@ -317,7 +323,7 @@ html[data-theme="dark"] [data-brand="compooper"] {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #2563eb;
+  background: var(--blue);
   border: 3px solid #fff;
   box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.18);
 }

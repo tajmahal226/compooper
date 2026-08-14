@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/login")({
   component: Login,
-  head: () => ({ meta: [{ title: "Sign in — Compisser" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Compooper" }] }),
 });
 
 function Login() {

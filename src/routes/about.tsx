@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
-  head: () => ({ meta: [{ title: "About Compisser & data attribution" }] }),
+  head: () => ({ meta: [{ title: "About Compooper & data attribution" }] }),
 });
 
 function AboutPage() {
@@ -13,21 +13,27 @@ function AboutPage() {
       <SiteHeader current="about" />
       <main id="main-content" className="site-wrap py-14">
         <article className="mx-auto max-w-[640px] rounded-xl border border-card-border bg-card p-8 shadow-(--shadow-sm) sm:p-10">
-          <p className="mb-2 text-sm font-bold tracking-wide text-blue uppercase">About Compisser</p>
-          <h1 className="mb-4 text-[clamp(1.8rem,4vw,2.4rem)] font-extrabold">A simpler way to find a toilet.</h1>
+          <p className="mb-2 text-sm font-bold tracking-wide text-blue uppercase">
+            About Compooper
+          </p>
+          <h1 className="mb-4 text-[clamp(1.8rem,4vw,2.4rem)] font-extrabold">
+            A better way to pick a bathroom.
+          </h1>
           <p className="text-muted">
-            Compisser is a worldwide public toilet finder. Use the web map to explore an area, or open
-            the compass and follow the arrow to the closest public toilet.
+            Compooper ranks the bathrooms around you by whether they are worth sitting in, then
+            points a compass at the winner. Cleanliness is the axis: a hotel, a high-end department
+            store or a proper restaurant beats a council block in a park, even when the park one is
+            closer.
           </p>
           <p className="text-muted">
-            Compisser is free, with no ads and no subscriptions. Finding an essential facility should be
-            quick, calm and available to everyone.
+            Compooper is free, with no ads and no subscriptions. Needing a few unhurried minutes is
+            normal, and knowing where to take them should not be guesswork.
           </p>
 
           <h2 className="mt-8 mb-3 text-xl font-extrabold">Data sources & attribution</h2>
           <p className="text-muted">
-            Compisser combines live public-toilet records from OpenStreetMap with a small curated set
-            used when the live feed is unreachable. Source information is kept with each place.
+            Compooper combines live public-toilet records from OpenStreetMap with a small curated
+            set used when the live feed is unreachable. Source information is kept with each place.
           </p>
 
           <h3 className="mt-5 mb-2 text-base font-bold">Toilet data</h3>
@@ -37,11 +43,14 @@ function AboutPage() {
               OpenStreetMap contributors
             </a>
             . OpenStreetMap data is available under the{" "}
-            <a href="https://opendatacommons.org/licenses/odbl/1-0/" className="font-semibold text-blue">
+            <a
+              href="https://opendatacommons.org/licenses/odbl/1-0/"
+              className="font-semibold text-blue"
+            >
               Open Database Licence
             </a>
-            . Compisser selects public toilet records, excludes facilities tagged as private, and
-            normalises facilities and opening information for the finder.
+            . Compooper selects public toilet records, excludes facilities tagged as private, and
+            normalises facilities, seating type, paper supply and access rules for the finder.
           </p>
           <p className="text-muted">
             UK coverage is also inspired by the excellent open{" "}

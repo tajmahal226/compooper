@@ -11,16 +11,16 @@ data, community ratings and condition reports.
 It is the sister app to [**Compisser**](https://github.com/tajmahal226/compisser), and the
 split between them is the whole product thesis:
 
-|               | Compisser                    | Compooper                                    |
-| ------------- | ---------------------------- | -------------------------------------------- |
-| Use case      | Pee — urgent                 | Poop — you need a proper sit                 |
-| Optimizes for | **Proximity.** Nearest wins. | **Quality.** Paid or upscale-and-clean wins. |
-| Default sort  | `distance`                   | `nicest` (`brand.defaultSort`)               |
+|               | Compisser                    | Compooper                                |
+| ------------- | ---------------------------- | ---------------------------------------- |
+| Use case      | Pee — urgent                 | Poop — you need a proper sit             |
+| Optimizes for | **Proximity.** Nearest wins. | **Cleanliness.** Upscale-and-clean wins. |
+| Default sort  | `distance`                   | `nicest` (`brand.defaultSort`)           |
 
-The practical consequence, and the thing most likely to be "fixed" wrongly: **paying is a
-positive signal here, not a cost to avoid.** A turnstile or an attendant means someone
-restocks the paper and mops the floor. Compisser's free-first instinct is backwards for
-Compooper. See `src/lib/throne.ts`.
+The thing most likely to be "fixed" wrongly: **free and near is not the goal.** A public
+library is free, pleasant and probably closer — and is explicitly excluded from the upscale
+tier, because this app exists to find somewhere you would happily spend ten minutes. Cost is a
+footnote, distance is a tie-break. See `src/lib/throne.ts`.
 
 This repo is a **fork of Compisser**, which is itself a Grok "app builder" workspace
 template. `scripts/`, `server/`, and `migrations/` are byte-identical to the sister repo, as
@@ -93,17 +93,28 @@ stubs that bounce to the top-level equivalents — put real UI in the top-level 
 
 ### Ranking (the reason this app exists)
 
-`src/lib/throne.ts` — `throneScore(toilet, stats)` returns 0–100 and is the app's core. It
-starts at 38 and adjusts on:
+`src/lib/throne.ts` — `throneScore(toilet, stats)` returns 0–100 and is the app's core.
+**The axis is cleanliness**, not cost and not distance. It starts at 38 and adjusts on:
 
-- **Paid** (`free === false`) `+12` — attended, therefore stocked. Not a penalty. See above.
-- **Venue tier**, matched against `operator + name + description`: `UPSCALE` (hotel, museum,
-  library, department store, …) `+18`, else `DECENT` (mall, centre, station, market, …) `+8`;
-  `GRIM` (porta, chemical, urinal, …) `−24`. A urinal is disqualifying, not merely bad.
-- **Cubicle proxies**: accessible `+8` (full-size lockable stall), baby change `+5`, all-gender
-  `+3`, published hours `+4`, named operator `+4` — each is a proxy for "someone maintains this".
+- **Venue class** — the dominant term, matched against `venueText()` (`operator + name +
+description`). `UPSCALE` `+22` (hotels, high-end department stores, restaurants, spas — venues
+  whose brand depends on the bathrooms; the list lives in `toilets.ts` as `isUpscale`), else
+  `DECENT` `+8` (malls, market halls, terminals). `GRIM` `−24` (porta-loo, chemical, urinal).
+- **`CIVIC` is deliberately excluded from upscale** — libraries, town halls, community and
+  leisure centres score flat. They are free, pleasant and often nearest, and they are still not
+  what this app is for. A civic match also suppresses the `UPSCALE`/`DECENT` bonus, so a council
+  library never gets department-store treatment.
+- **Hard cubicle facts**, when OSM has them: `position === "seated"` `+10`, squat/urinal `−30`,
+  `paper === true` `+8`, `paper === false` `−10`.
+- **Paid** (`free === false`) `+5` — only a weak correlate of "attended". The venue term says it
+  better; do not re-inflate this.
+- **Maintenance proxies**: accessible `+8`, baby change `+5`, all-gender `+3`, published hours
+  `+4`, named operator `+4`.
 - **Community stats** outrank every heuristic: `avgRolls × 8`, condition open `+6`, queueing
   `−6`, out-of-paper/out-of-order `−22`.
+
+Access (`customers` / `guests`) is **surfaced, never scored** — being customers-only is a
+condition of entry, not a defect, and upscale venues are frequently gated.
 
 Keep the venue regexes tight. They match raw OSM free text, so a loose alternative silently
 mis-scores real places — bare `brick` used to dock Brick Lane 16 points. Diacritics are _not_
@@ -129,9 +140,15 @@ Toilet data has three tiers, in order:
    `live: false` so the UI can say so. This is why the map is never empty offline.
 3. `searchPlace` — Nominatim geocoding for the town search box.
 
-`parseOverpassElement` is the single normalization point from OSM tags → the `Toilet` type
-(accessible / babyChange / free / allGender / radarKey). Add new facility flags there **and**
-in `Filters` / `matchesFilters` together — and decide whether `throneScore` should weigh them.
+`parseOverpassElement` is the single normalization point from OSM tags → the `Toilet` type. It
+reads `toilets:position` (→ `seated` / `squat` / `urinal`, semicolon lists resolved
+seated-first), `toilets:paper_supplied`, and `access` (→ `public` / `customers` / `guests` /
+`private`) alongside the accessibility and fee tags. Add new facility flags there **and** in
+`Filters` / `matchesFilters` **and** decide whether `throneScore` weighs them — the three drift
+apart easily.
+
+Unknown values pass filters rather than failing them: most OSM entries are untagged, so
+`seated` only excludes a _known_ squat or urinal. Filtering on absence would empty the map.
 
 Pure geo math lives in `src/lib/geo.ts` (haversine, bearing, distance/walk formatting).
 Compooper's copy ladder is `dumpMood` in `throne.ts`; `distanceMood` in `geo.ts` is Compisser's
@@ -246,5 +263,9 @@ reach the browser.
   and a `vite.config.ts` guard that disables sign-in on builds with no broker credentials (so a
   self-hosted deploy does not ship an always-failing sign-in button). Port them if this app is
   deployed outside the Grok platform.
-- `npm run lint` is clean apart from 5 pre-existing `react-refresh/only-export-components`
-  warnings — keep it from getting worse.
+- `public/og.jpg` is still **Compisser's** share card — blue/green, with the sister app's
+  uncrowned mascot — so every social share of Compooper unfurls as the wrong app. Needs
+  1200×630 warm-palette art with the crowned mascot, under 600 KB (`scripts/brand-check.mjs`
+  gates the size).
+- `npm run lint` is clean apart from 5 pre-existing warnings (4 `react-refresh`, 1
+  `exhaustive-deps`) — keep it from getting worse.

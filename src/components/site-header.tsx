@@ -33,7 +33,7 @@ export function SiteHeader({ current }: { current?: "home" | "map" | "about" | "
             to={brand.map}
             className="inline-flex h-11 items-center rounded-[10px] bg-blue px-3 text-[0.9rem] font-extrabold text-white no-underline hover:bg-blue-dark"
           >
-            {brand.id === "compooper" ? "Find a throne" : "Find a toilet"}
+            Find a throne
           </Link>
           <NavLink to="/about" active={current === "about"} className="hidden md:inline-flex">
             About

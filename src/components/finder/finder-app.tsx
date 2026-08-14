@@ -5,8 +5,8 @@ import {
   Armchair,
   Baby,
   ChevronDown,
-  CircleDollarSign,
   Compass,
+  Gem,
   KeyRound,
   LocateFixed,
   Map as MapIcon,
@@ -18,12 +18,33 @@ import {
 import { CompassDial } from "@/components/compass-dial";
 import { IosInstallHint } from "@/components/ios-install-hint";
 import { useBrand } from "@/lib/brand";
-import { getToiletStats, submitRating, submitReport, type ConditionStatus, type ToiletStats } from "@/lib/community";
+import {
+  getToiletStats,
+  submitRating,
+  submitReport,
+  type ConditionStatus,
+  type ToiletStats,
+} from "@/lib/community";
 import { loadFavorites, toggleFavorite } from "@/lib/favorites";
-import { bearingDegrees, formatDistance, formatWalk, haversineMeters, mapsWalkUrl, type LatLng } from "@/lib/geo";
+import {
+  bearingDegrees,
+  formatDistance,
+  formatWalk,
+  haversineMeters,
+  mapsWalkUrl,
+  type LatLng,
+} from "@/lib/geo";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { throneLabel, throneScore } from "@/lib/throne";
-import { EMPTY_FILTERS, FALLBACK_CITIES, hasActiveFilters, matchesFilters, type Filters, type Toilet } from "@/lib/toilets";
+import {
+  EMPTY_FILTERS,
+  FALLBACK_CITIES,
+  hasActiveFilters,
+  isUpscale,
+  matchesFilters,
+  type Filters,
+  type Toilet,
+} from "@/lib/toilets";
 import { fetchToiletsNear, searchPlace } from "@/lib/toilet-api";
 import { cn } from "@/lib/utils";
 import { FacilityBadges } from "./facility-badges";
@@ -32,7 +53,7 @@ import { DetailBody, ToiletDetail } from "./toilet-detail";
 
 const LONDON: LatLng = { lat: 51.5074, lng: -0.1278 };
 
-type SortKey = "distance" | "free" | "accessible" | "nicest";
+type SortKey = "distance" | "upscale" | "accessible" | "nicest";
 
 export function FinderApp() {
   const brand = useBrand();
@@ -62,7 +83,7 @@ export function FinderApp() {
 
   const loadAround = useCallback(async (pt: LatLng, label?: string) => {
     setLoading(true);
-    setStatus("Looking for toilets…");
+    setStatus("Scouting for a decent throne…");
     fetchOriginRef.current = pt;
     try {
       const res = await fetchToiletsNear({ data: { lat: pt.lat, lng: pt.lng } });
@@ -71,8 +92,8 @@ export function FinderApp() {
       setAreaLabel(label ?? res.areaLabel);
       setStatus(
         res.live
-          ? `${res.toilets.length} toilets from OpenStreetMap`
-          : `Showing curated toilets in ${res.areaLabel}`,
+          ? `${res.toilets.length} candidates from OpenStreetMap`
+          : `Showing curated picks in ${res.areaLabel}`,
       );
       setOrigin(pt);
       const ids = res.toilets.map((t) => t.id);
@@ -86,7 +107,7 @@ export function FinderApp() {
       setAreaLabel(fb.label);
       setLiveData(false);
       setOrigin(pt);
-      setStatus("Couldn’t reach live data — showing curated toilets");
+      setStatus("Couldn’t reach live data — showing curated picks");
     } finally {
       setLoading(false);
     }
@@ -174,9 +195,9 @@ export function FinderApp() {
         const adjB = b.score - b.distance / 80;
         if (adjA !== adjB) return adjB - adjA;
       }
-      if (sort === "free") {
-        const af = a.toilet.free === true ? 0 : 1;
-        const bf = b.toilet.free === true ? 0 : 1;
+      if (sort === "upscale") {
+        const af = isUpscale(a.toilet) ? 0 : 1;
+        const bf = isUpscale(b.toilet) ? 0 : 1;
         if (af !== bf) return af - bf;
       }
       if (sort === "accessible") {
@@ -277,11 +298,12 @@ export function FinderApp() {
     setSheetOpen(false);
   }
 
-  const filterDefs: { key: keyof Filters; label: string; icon: typeof Accessibility; brand?: "compooper" }[] = [
-    { key: "niceSit", label: "Nice sit", icon: Armchair, brand: "compooper" },
+  const filterDefs: { key: keyof Filters; label: string; icon: typeof Accessibility }[] = [
+    { key: "niceSit", label: "Worth a sit", icon: Armchair },
+    { key: "upscale", label: "Upscale", icon: Gem },
+    { key: "seated", label: "Sit-down", icon: Armchair },
     { key: "accessible", label: "Accessible", icon: Accessibility },
     { key: "babyChange", label: "Baby changing", icon: Baby },
-    { key: "free", label: "Free", icon: CircleDollarSign },
     { key: "allGender", label: "All-gender", icon: Users },
     { key: "radarKey", label: "RADAR key", icon: KeyRound },
   ];
@@ -319,9 +341,7 @@ export function FinderApp() {
               }))}
             />
           ) : (
-            <div className="grid h-full place-items-center text-muted">
-              {brand.id === "compooper" ? "No thrones in view" : "No toilets in view"}
-            </div>
+            <div className="grid h-full place-items-center text-muted">No thrones in view</div>
           )}
         </div>
       )}
@@ -358,10 +378,12 @@ export function FinderApp() {
         </div>
       </div>
 
-      <section className={cn(
-        "pointer-events-auto absolute top-[max(60px,calc(env(safe-area-inset-top)+52px))] right-3 left-3 z-10 max-w-[400px] overflow-hidden rounded-[18px] border border-card-border bg-card/95 p-2 shadow-(--shadow) backdrop-blur-xl lg:top-3 lg:left-4",
-        view === "compass" && "hidden lg:block",
-      )}>
+      <section
+        className={cn(
+          "pointer-events-auto absolute top-[max(60px,calc(env(safe-area-inset-top)+52px))] right-3 left-3 z-10 max-w-[400px] overflow-hidden rounded-[18px] border border-card-border bg-card/95 p-2 shadow-(--shadow) backdrop-blur-xl lg:top-3 lg:left-4",
+          view === "compass" && "hidden lg:block",
+        )}
+      >
         <form className="flex items-center gap-1.5" onSubmit={onSearch} role="search">
           <label className="sr-only" htmlFor="place-query">
             Search a town, postcode or station
@@ -394,9 +416,7 @@ export function FinderApp() {
           </button>
         </form>
         <div className="mt-1.5 flex min-w-0 gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {filterDefs
-            .filter((f) => !f.brand || f.brand === brand.id)
-            .map(({ key, label, icon: Icon }) => (
+          {filterDefs.map(({ key, label, icon: Icon }) => (
             <label
               key={key}
               className={cn(
@@ -453,7 +473,12 @@ export function FinderApp() {
       {status && view === "map" && (
         <div className="pointer-events-none absolute top-[calc(env(safe-area-inset-top)+168px)] right-3 left-3 z-10 max-w-[400px] lg:top-[148px] lg:left-4">
           <p className="inline-flex items-center gap-2 rounded-full border border-card-border bg-card/90 px-3 py-1.5 text-[11px] font-semibold text-muted shadow-(--shadow-sm)">
-            <span className={cn("size-1.5 rounded-full", loading ? "animate-pulse bg-amber-400" : "bg-green-pin")} />
+            <span
+              className={cn(
+                "size-1.5 rounded-full",
+                loading ? "animate-pulse bg-amber-400" : "bg-green-pin",
+              )}
+            />
             {status}
           </p>
         </div>
@@ -485,12 +510,17 @@ export function FinderApp() {
           >
             <span className="h-1 w-10 rounded-full bg-slate-light/40" />
             <ChevronDown
-              className={cn("mt-1 size-4 text-slate-light transition-transform lg:hidden", !sheetOpen && "rotate-180")}
+              className={cn(
+                "mt-1 size-4 text-slate-light transition-transform lg:hidden",
+                !sheetOpen && "rotate-180",
+              )}
             />
           </button>
           <div className="flex items-end justify-between gap-3 px-4 pb-2">
             <div>
-              <span className="text-[11px] font-bold tracking-wide text-blue uppercase">{areaLabel}</span>
+              <span className="text-[11px] font-bold tracking-wide text-blue uppercase">
+                {areaLabel}
+              </span>
               <h1 className="m-0 text-[1.15rem] font-extrabold">
                 <span className="tabular-nums">{ranked.length}</span> {brand.countNoun}
               </h1>
@@ -502,9 +532,9 @@ export function FinderApp() {
                 onChange={(e) => setSort(e.target.value as SortKey)}
                 className="ml-1.5 h-11 rounded-lg border border-card-border bg-card px-2 font-bold text-navy"
               >
+                <option value="nicest">Nicest sit</option>
+                <option value="upscale">Upscale first</option>
                 <option value="distance">Nearest</option>
-                {brand.id === "compooper" && <option value="nicest">Nicest sit</option>}
-                <option value="free">Free first</option>
                 <option value="accessible">Accessible first</option>
               </select>
             </label>
@@ -512,8 +542,11 @@ export function FinderApp() {
           <ol className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
             {ranked.length === 0 && !loading && (
               <li className="px-4 py-8 text-center">
-                <p className="mb-1 font-extrabold text-navy">No matches</p>
-                <p className="mb-3 text-sm text-muted">Try clearing a filter or searching another place.</p>
+                <p className="mb-1 font-extrabold text-navy">Nothing worth the walk</p>
+                <p className="mb-3 text-sm text-muted">
+                  Nowhere here clears the bar. Drop a filter, or search a busier neighbourhood —
+                  department stores and hotels are the reliable finds.
+                </p>
                 <button
                   type="button"
                   onClick={() => setFilters(EMPTY_FILTERS)}
@@ -532,11 +565,17 @@ export function FinderApp() {
                 )}
               >
                 <div className="grid grid-cols-[1fr_auto] items-center gap-2 px-1 py-1">
-                  <button type="button" onClick={() => pick(toilet.id)} className="flex min-h-14 min-w-0 items-center gap-2.5 text-left">
+                  <button
+                    type="button"
+                    onClick={() => pick(toilet.id)}
+                    className="flex min-h-14 min-w-0 items-center gap-2.5 text-left"
+                  >
                     <span
                       className={cn(
                         "grid size-10 shrink-0 place-items-center rounded-full text-white",
-                        toilet.accessible || toilet.id === nearest?.toilet.id ? "bg-blue" : "bg-green-pin",
+                        toilet.accessible || toilet.id === nearest?.toilet.id
+                          ? "bg-blue"
+                          : "bg-green-pin",
                       )}
                     >
                       <Compass className="size-4" />
@@ -550,9 +589,7 @@ export function FinderApp() {
                       </span>
                       <span className="block text-xs text-muted">
                         {formatWalk(distance)}
-                        {brand.id === "compooper"
-                          ? ` · ${throneLabel(score)} · ${score}`
-                          : ` · ${liveData ? "OpenStreetMap" : toilet.source}`}
+                        {` · ${throneLabel(score)} · ${score}`}
                       </span>
                       <span className="mt-1 block">
                         <FacilityBadges toilet={toilet} />
