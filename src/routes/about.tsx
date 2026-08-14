@@ -13,7 +13,7 @@ function AboutPage() {
       <SiteHeader current="about" />
       <main id="main-content" className="site-wrap py-14">
         <article className="mx-auto max-w-[640px] rounded-xl border border-card-border bg-card p-8 shadow-(--shadow-sm) sm:p-10">
-          <p className="mb-2 text-sm font-bold tracking-wide text-blue uppercase">
+          <p className="mb-2 text-sm font-bold tracking-wide text-brand uppercase">
             About Compooper
           </p>
           <h1 className="mb-4 text-[clamp(1.8rem,4vw,2.4rem)] font-extrabold">
@@ -39,13 +39,13 @@ function AboutPage() {
           <h3 className="mt-5 mb-2 text-base font-bold">Toilet data</h3>
           <p className="text-muted">
             ©{" "}
-            <a href="https://www.openstreetmap.org/copyright" className="font-semibold text-blue">
+            <a href="https://www.openstreetmap.org/copyright" className="font-semibold text-brand">
               OpenStreetMap contributors
             </a>
             . OpenStreetMap data is available under the{" "}
             <a
               href="https://opendatacommons.org/licenses/odbl/1-0/"
-              className="font-semibold text-blue"
+              className="font-semibold text-brand"
             >
               Open Database Licence
             </a>
@@ -54,7 +54,7 @@ function AboutPage() {
           </p>
           <p className="text-muted">
             UK coverage is also inspired by the excellent open{" "}
-            <a href="https://www.toiletmap.org.uk/dataset" className="font-semibold text-blue">
+            <a href="https://www.toiletmap.org.uk/dataset" className="font-semibold text-brand">
               Toilet Map
             </a>{" "}
             dataset (CC BY 4.0).
@@ -63,15 +63,15 @@ function AboutPage() {
           <h3 className="mt-5 mb-2 text-base font-bold">Web map and place search</h3>
           <p className="text-muted">
             The finder is rendered with{" "}
-            <a href="https://maplibre.org/" className="font-semibold text-blue">
+            <a href="https://maplibre.org/" className="font-semibold text-brand">
               MapLibre GL JS
             </a>
             . Tiles and style come from{" "}
-            <a href="https://openfreemap.org/" className="font-semibold text-blue">
+            <a href="https://openfreemap.org/" className="font-semibold text-brand">
               OpenFreeMap
             </a>{" "}
             / OpenMapTiles and © OpenStreetMap contributors. Place search uses{" "}
-            <a href="https://nominatim.org/" className="font-semibold text-blue">
+            <a href="https://nominatim.org/" className="font-semibold text-brand">
               Nominatim
             </a>
             .
@@ -85,15 +85,15 @@ function AboutPage() {
           </p>
 
           <p className="mt-8 text-sm text-muted">
-            <Link to="/privacy" className="font-semibold text-blue">
+            <Link to="/privacy" className="font-semibold text-brand">
               Privacy
             </Link>
             {" · "}
-            <Link to="/help" className="font-semibold text-blue">
+            <Link to="/help" className="font-semibold text-brand">
               Help
             </Link>
             {" · "}
-            <Link to="/map" className="font-semibold text-blue">
+            <Link to="/map" className="font-semibold text-brand">
               Open the finder
             </Link>
           </p>

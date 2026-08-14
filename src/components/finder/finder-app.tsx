@@ -349,7 +349,7 @@ export function FinderApp() {
       <div className="pointer-events-none absolute top-[max(8px,env(safe-area-inset-top))] right-3 left-3 z-20 flex items-center justify-between gap-2 lg:hidden">
         <Link
           to={brand.home}
-          className="pointer-events-auto inline-flex h-11 items-center gap-2 rounded-full border border-card-border bg-card/95 px-3 font-extrabold text-navy no-underline shadow-(--shadow-sm) backdrop-blur-xl"
+          className="pointer-events-auto inline-flex h-11 items-center gap-2 rounded-full border border-card-border bg-card/95 px-3 font-extrabold text-ink no-underline shadow-(--shadow-sm) backdrop-blur-xl"
         >
           <img src={brand.mascot} alt="" className="size-6 object-contain" />
           {brand.name}
@@ -360,7 +360,7 @@ export function FinderApp() {
             onClick={() => setView("map")}
             className={cn(
               "inline-flex h-11 items-center gap-1 px-3.5 text-sm font-bold",
-              view === "map" ? "bg-navy text-[color:#f8fafc]" : "text-navy",
+              view === "map" ? "bg-panel-invert text-panel-invert-fg" : "text-ink",
             )}
           >
             <MapIcon className="size-4" /> Map
@@ -370,7 +370,7 @@ export function FinderApp() {
             onClick={() => void enableCompass()}
             className={cn(
               "inline-flex h-11 items-center gap-1 px-3.5 text-sm font-bold",
-              view === "compass" ? "bg-navy text-[color:#f8fafc]" : "text-navy",
+              view === "compass" ? "bg-panel-invert text-panel-invert-fg" : "text-ink",
             )}
           >
             <Compass className="size-4" /> Compass
@@ -398,11 +398,11 @@ export function FinderApp() {
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
-            className="min-w-0 flex-1 bg-transparent py-2.5 text-navy outline-none placeholder:text-slate-light"
+            className="min-w-0 flex-1 bg-transparent py-2.5 text-ink outline-none placeholder:text-ink-faint"
           />
           <button
             type="submit"
-            className="h-11 rounded-xl bg-blue px-3 text-sm font-bold text-white hover:bg-blue-dark"
+            className="h-11 rounded-xl bg-brand px-3 text-sm font-bold text-on-brand hover:bg-brand-dark"
           >
             Search
           </button>
@@ -410,7 +410,7 @@ export function FinderApp() {
             type="button"
             onClick={locateMe}
             aria-label="Use my location"
-            className="grid size-11 shrink-0 place-items-center rounded-xl border border-card-border bg-card text-navy"
+            className="grid size-11 shrink-0 place-items-center rounded-xl border border-card-border bg-card text-ink"
           >
             <LocateFixed className="size-4" />
           </button>
@@ -422,7 +422,7 @@ export function FinderApp() {
               className={cn(
                 "inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-bold",
                 filters[key]
-                  ? "border-blue bg-blue-soft text-blue"
+                  ? "border-brand bg-brand-soft text-brand"
                   : "border-card-border bg-card text-muted",
               )}
             >
@@ -440,7 +440,7 @@ export function FinderApp() {
             <button
               type="button"
               onClick={() => setFilters(EMPTY_FILTERS)}
-              className="h-9 rounded-xl px-2.5 text-xs font-bold text-blue"
+              className="h-9 rounded-xl px-2.5 text-xs font-bold text-brand"
             >
               Clear
             </button>
@@ -452,7 +452,7 @@ export function FinderApp() {
             onClick={() => setView("map")}
             className={cn(
               "inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl text-sm font-bold",
-              view === "map" ? "bg-navy text-[color:#f8fafc]" : "bg-bg-top text-navy",
+              view === "map" ? "bg-panel-invert text-panel-invert-fg" : "bg-bg-top text-ink",
             )}
           >
             <MapIcon className="size-4" /> Map
@@ -462,7 +462,7 @@ export function FinderApp() {
             onClick={() => void enableCompass()}
             className={cn(
               "inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl text-sm font-bold",
-              view === "compass" ? "bg-navy text-[color:#f8fafc]" : "bg-bg-top text-navy",
+              view === "compass" ? "bg-panel-invert text-panel-invert-fg" : "bg-bg-top text-ink",
             )}
           >
             <Compass className="size-4" /> Compass
@@ -476,7 +476,7 @@ export function FinderApp() {
             <span
               className={cn(
                 "size-1.5 rounded-full",
-                loading ? "animate-pulse bg-amber-400" : "bg-green-pin",
+                loading ? "animate-pulse bg-amber-400" : "bg-pin",
               )}
             />
             {status}
@@ -486,7 +486,7 @@ export function FinderApp() {
 
       {view === "compass" && motionDenied && (
         <div className="absolute top-[calc(env(safe-area-inset-top)+198px)] right-3 left-3 z-10 max-w-[400px] rounded-2xl border border-card-border bg-card p-3 text-sm shadow-(--shadow) lg:left-4">
-          <p className="m-0 font-bold text-navy">Turn on motion access</p>
+          <p className="m-0 font-bold text-ink">Turn on motion access</p>
           <p className="mt-1 mb-0 text-muted">
             iPhone: Settings → Safari → Motion & Orientation Access, then tap Compass again.
           </p>
@@ -508,17 +508,17 @@ export function FinderApp() {
             aria-expanded={sheetOpen}
             aria-label={sheetOpen ? "Collapse toilet list" : "Expand toilet list"}
           >
-            <span className="h-1 w-10 rounded-full bg-slate-light/40" />
+            <span className="h-1 w-10 rounded-full bg-ink-faint/40" />
             <ChevronDown
               className={cn(
-                "mt-1 size-4 text-slate-light transition-transform lg:hidden",
+                "mt-1 size-4 text-ink-faint transition-transform lg:hidden",
                 !sheetOpen && "rotate-180",
               )}
             />
           </button>
           <div className="flex items-end justify-between gap-3 px-4 pb-2">
             <div>
-              <span className="text-[11px] font-bold tracking-wide text-blue uppercase">
+              <span className="text-[11px] font-bold tracking-wide text-brand uppercase">
                 {areaLabel}
               </span>
               <h1 className="m-0 text-[1.15rem] font-extrabold">
@@ -530,7 +530,7 @@ export function FinderApp() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as SortKey)}
-                className="ml-1.5 h-11 rounded-lg border border-card-border bg-card px-2 font-bold text-navy"
+                className="ml-1.5 h-11 rounded-lg border border-card-border bg-card px-2 font-bold text-ink"
               >
                 <option value="nicest">Nicest sit</option>
                 <option value="upscale">Upscale first</option>
@@ -542,7 +542,7 @@ export function FinderApp() {
           <ol className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
             {ranked.length === 0 && !loading && (
               <li className="px-4 py-8 text-center">
-                <p className="mb-1 font-extrabold text-navy">Nothing worth the walk</p>
+                <p className="mb-1 font-extrabold text-ink">Nothing worth the walk</p>
                 <p className="mb-3 text-sm text-muted">
                   Nowhere here clears the bar. Drop a filter, or search a busier neighbourhood —
                   department stores and hotels are the reliable finds.
@@ -550,7 +550,7 @@ export function FinderApp() {
                 <button
                   type="button"
                   onClick={() => setFilters(EMPTY_FILTERS)}
-                  className="h-11 rounded-xl bg-blue px-3 font-bold text-white"
+                  className="h-11 rounded-xl bg-brand px-3 font-bold text-on-brand"
                 >
                   Clear filters
                 </button>
@@ -561,7 +561,7 @@ export function FinderApp() {
                 key={toilet.id}
                 className={cn(
                   "border-t border-card-border",
-                  selectedId === toilet.id && "bg-blue-soft/40",
+                  selectedId === toilet.id && "bg-brand-soft/40",
                 )}
               >
                 <div className="grid grid-cols-[1fr_auto] items-center gap-2 px-1 py-1">
@@ -572,18 +572,18 @@ export function FinderApp() {
                   >
                     <span
                       className={cn(
-                        "grid size-10 shrink-0 place-items-center rounded-full text-white",
-                        toilet.accessible || toilet.id === nearest?.toilet.id
-                          ? "bg-blue"
-                          : "bg-green-pin",
+                        "grid size-10 shrink-0 place-items-center rounded-full text-on-brand",
+                        isUpscale(toilet) || toilet.id === nearest?.toilet.id
+                          ? "bg-brand"
+                          : "bg-pin",
                       )}
                     >
                       <Compass className="size-4" />
                     </span>
                     <span className="min-w-0">
                       <span className="flex items-baseline justify-between gap-2">
-                        <strong className="truncate text-[0.95rem] text-navy">{toilet.name}</strong>
-                        <b className="shrink-0 text-[0.85rem] font-extrabold text-navy tabular-nums">
+                        <strong className="truncate text-[0.95rem] text-ink">{toilet.name}</strong>
+                        <b className="shrink-0 text-[0.85rem] font-extrabold text-ink tabular-nums">
                           {formatDistance(distance)}
                         </b>
                       </span>
@@ -601,7 +601,7 @@ export function FinderApp() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Walking directions to ${toilet.name}`}
-                    className="grid size-11 place-items-center rounded-xl bg-blue text-white no-underline"
+                    className="grid size-11 place-items-center rounded-xl bg-brand text-on-brand no-underline"
                   >
                     <Navigation className="size-4" />
                   </a>
@@ -609,7 +609,7 @@ export function FinderApp() {
               </li>
             ))}
           </ol>
-          <p className="hidden px-4 pb-3 text-[10px] text-slate-light lg:block">
+          <p className="hidden px-4 pb-3 text-[10px] text-ink-faint lg:block">
             {liveData ? (
               <>
                 Live toilets from{" "}
@@ -636,7 +636,7 @@ export function FinderApp() {
           href={mapsWalkUrl(compassTarget.toilet)}
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute right-3 left-3 z-20 flex h-12 items-center justify-center gap-2 rounded-2xl bg-blue font-extrabold text-white no-underline shadow-(--shadow) lg:hidden"
+          className="absolute right-3 left-3 z-20 flex h-12 items-center justify-center gap-2 rounded-2xl bg-brand font-extrabold text-on-brand no-underline shadow-(--shadow) lg:hidden"
           style={{ bottom: "max(16px, calc(env(safe-area-inset-bottom) + 10px))" }}
         >
           <Navigation className="size-4" />

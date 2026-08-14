@@ -61,7 +61,7 @@ export function ToiletDetail({
         type="button"
         onClick={onClose}
         aria-label="Close toilet details"
-        className="absolute top-3 left-3 z-10 grid size-9 place-items-center rounded-full border border-card-border bg-card text-navy shadow-(--shadow-sm)"
+        className="absolute top-3 left-3 z-10 grid size-9 place-items-center rounded-full border border-card-border bg-card text-ink shadow-(--shadow-sm)"
       >
         <X className="size-4" />
       </button>
@@ -122,7 +122,7 @@ export function DetailBody({
       </div>
       <div className="p-5">
         <div className="flex items-start justify-between gap-2">
-          <span className="inline-flex rounded-full bg-blue-soft px-2 py-1 text-[10px] font-extrabold text-blue">
+          <span className="inline-flex rounded-full bg-brand-soft px-2 py-1 text-[10px] font-extrabold text-brand">
             {`${throneLabel(sit)} · ${sit}`}
           </span>
           <button
@@ -136,7 +136,7 @@ export function DetailBody({
         </div>
         <h2 className="mt-2 mb-1 text-[1.4rem] font-extrabold">{toilet.name}</h2>
         <p className="mb-3 text-[0.85rem] text-muted">
-          <strong className="text-navy">{distLabel}</strong>
+          <strong className="text-ink">{distLabel}</strong>
           {walkLabel ? ` · ${walkLabel}` : ""}
         </p>
         <div className="mb-4">
@@ -144,7 +144,7 @@ export function DetailBody({
         </div>
         <section className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-card-border bg-bg-top/50 p-3.5">
           <div>
-            <h3 className="m-0 text-[0.88rem] font-bold text-navy">Cleanliness</h3>
+            <h3 className="m-0 text-[0.88rem] font-bold text-ink">Cleanliness</h3>
             <p className="m-0 mt-0.5 text-[0.67rem] text-muted">
               {stats?.ratingCount
                 ? `Rated in loo rolls by ${stats.ratingCount} ${stats.ratingCount === 1 ? "sitter" : "sitters"}`
@@ -156,19 +156,19 @@ export function DetailBody({
         <dl className="mb-4 divide-y divide-card-border border-y border-card-border">
           <div className="flex justify-between gap-4 py-3">
             <dt className="text-[0.72rem] text-muted">Opening information</dt>
-            <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+            <dd className="m-0 text-right text-[0.72rem] font-bold text-ink">
               {toilet.openingHours ?? "Hours not listed"}
             </dd>
           </div>
           <div className="flex justify-between gap-4 py-3">
             <dt className="text-[0.72rem] text-muted">Getting in</dt>
-            <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+            <dd className="m-0 text-right text-[0.72rem] font-bold text-ink">
               {ACCESS_LABEL[toilet.access ?? "unknown"]}
             </dd>
           </div>
           <div className="flex justify-between gap-4 py-3">
             <dt className="text-[0.72rem] text-muted">Cost</dt>
-            <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+            <dd className="m-0 text-right text-[0.72rem] font-bold text-ink">
               {toilet.free === true
                 ? "Free"
                 : toilet.fee === "yes"
@@ -180,14 +180,14 @@ export function DetailBody({
           </div>
           <div className="flex justify-between gap-4 py-3">
             <dt className="text-[0.72rem] text-muted">Cubicle</dt>
-            <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+            <dd className="m-0 text-right text-[0.72rem] font-bold text-ink">
               {POSITION_LABEL[toilet.position ?? "unknown"]}
             </dd>
           </div>
           {toilet.operator && (
             <div className="flex justify-between gap-4 py-3">
               <dt className="text-[0.72rem] text-muted">Operator</dt>
-              <dd className="m-0 text-right text-[0.72rem] font-bold text-navy">
+              <dd className="m-0 text-right text-[0.72rem] font-bold text-ink">
                 {toilet.operator}
               </dd>
             </div>
@@ -202,14 +202,14 @@ export function DetailBody({
         {signedIn ? (
           <div className="mb-4 space-y-3">
             <div>
-              <p className="mb-1.5 text-[0.72rem] font-bold text-navy">Rate the sit</p>
+              <p className="mb-1.5 text-[0.72rem] font-bold text-ink">Rate the sit</p>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
                     key={n}
                     type="button"
                     onClick={() => onRate(n)}
-                    className="h-11 min-w-11 rounded-lg border border-card-border bg-card px-3 text-sm font-bold hover:bg-blue-soft"
+                    className="h-11 min-w-11 rounded-lg border border-card-border bg-card px-3 text-sm font-bold hover:bg-brand-soft"
                     aria-label={`Rate ${n} loo rolls`}
                   >
                     {n}
@@ -218,14 +218,14 @@ export function DetailBody({
               </div>
             </div>
             <div>
-              <p className="mb-1.5 text-[0.72rem] font-bold text-navy">Report conditions</p>
+              <p className="mb-1.5 text-[0.72rem] font-bold text-ink">Report conditions</p>
               <div className="flex flex-wrap gap-1">
                 {CONDITIONS.map((c) => (
                   <button
                     key={c.id}
                     type="button"
                     onClick={() => onReport(c.id)}
-                    className="h-11 min-w-11 rounded-lg border border-card-border bg-card px-3 text-sm font-bold hover:bg-blue-soft"
+                    className="h-11 min-w-11 rounded-lg border border-card-border bg-card px-3 text-sm font-bold hover:bg-brand-soft"
                   >
                     {c.label}
                   </button>
@@ -236,13 +236,13 @@ export function DetailBody({
         ) : (
           <Link
             to="/login"
-            className="mb-4 flex items-center gap-2.5 rounded-[13px] border border-card-border bg-blue-soft/60 p-3 no-underline"
+            className="mb-4 flex items-center gap-2.5 rounded-[13px] border border-card-border bg-brand-soft/60 p-3 no-underline"
           >
-            <span className="grid size-8 place-items-center rounded-[9px] bg-blue-soft text-xs font-extrabold text-blue">
+            <span className="grid size-8 place-items-center rounded-[9px] bg-brand-soft text-xs font-extrabold text-brand">
               ···
             </span>
             <span className="min-w-0 flex-1">
-              <strong className="block text-[0.72rem] text-navy">Sign in to contribute</strong>
+              <strong className="block text-[0.72rem] text-ink">Sign in to contribute</strong>
               <small className="text-[0.6rem] leading-snug text-muted">
                 Rate the sit, or warn the next person about the paper situation.
               </small>
@@ -253,7 +253,7 @@ export function DetailBody({
           href={mapsWalkUrl({ lat: toilet.lat, lng: toilet.lng })}
           target="_blank"
           rel="noopener noreferrer"
-          className="sticky bottom-0 z-1 -mx-5 mt-2 flex h-12 items-center justify-between bg-blue px-5 font-extrabold text-white no-underline hover:bg-blue-dark"
+          className="sticky bottom-0 z-1 -mx-5 mt-2 flex h-12 items-center justify-between bg-brand px-5 font-extrabold text-on-brand no-underline hover:bg-brand-dark"
           style={{
             paddingBottom: "max(0px, env(safe-area-inset-bottom))",
             minHeight: "calc(3rem + env(safe-area-inset-bottom))",

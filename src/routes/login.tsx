@@ -27,7 +27,7 @@ function Login() {
                   key={p.providerId}
                   type="button"
                   onClick={() => signIn(p.providerId, { callbackURL: "/map" })}
-                  className="h-12 w-full rounded-[14px] border border-card-border bg-card px-4 font-bold text-navy hover:bg-blue-soft"
+                  className="h-12 w-full rounded-[14px] border border-card-border bg-card px-4 font-bold text-ink hover:bg-brand-soft"
                 >
                   Continue with {p.label}
                 </button>
@@ -37,7 +37,7 @@ function Login() {
             <p className="text-sm text-muted">Sign-in is disabled.</p>
           )}
           <p className="mt-6 text-center text-sm">
-            <Link to="/map" className="font-semibold text-blue">
+            <Link to="/map" className="font-semibold text-brand">
               Skip — just find a toilet
             </Link>
           </p>
