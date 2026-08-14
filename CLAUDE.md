@@ -285,9 +285,10 @@ reach the browser.
   a self-hosted deploy does not ship an always-failing sign-in button). The deployed app has no
   `DATABASE_URL`, so it runs on the PGLite fallback inside a serverless function — ratings and
   condition reports will not persist between invocations.
-- `public/og.jpg` is still **Compisser's** share card — blue/green, with the sister app's
-  uncrowned mascot — so every social share of Compooper unfurls as the wrong app. Needs
-  1200×630 warm-palette art with the crowned mascot, under 600 KB (`scripts/brand-check.mjs`
-  gates the size).
+- `public/og.jpg` is the link-preview card, generated from `scripts/og-card.html` by
+  `node scripts/og-card.mjs`. Rerun it after changing the wordmark or tagline, and keep the
+  output under 600 KB (`scripts/brand-check.mjs` gates the size). `og:image` needs an absolute
+  URL, so `__root.tsx` falls back to the production host when `VITE_PUBLIC_HOSTNAME` is unset —
+  without that fallback the tag is omitted entirely and links unfurl as plain text.
 - `npm run lint` is clean apart from 5 pre-existing warnings (4 `react-refresh`, 1
   `exhaustive-deps`) — keep it from getting worse.

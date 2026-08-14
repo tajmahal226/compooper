@@ -1,0 +1,117 @@
+<!doctype html>
+<!--
+  Source for public/og.jpg — the 1200x630 link-preview card.
+
+  Regenerate after changing the wordmark or tagline:
+    node scripts/og-card.mjs
+  which renders this file headlessly and writes public/og.jpg.
+  Keep the output under 600 KB (scripts/brand-check.mjs gates it).
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      /* Fraunces is vendored (SIL OFL, latin subset) rather than fetched from
+         Google Fonts: rendering must be deterministic and must not depend on
+         network access, or the wordmark silently falls back to Georgia and the
+         card ships off-brand. */
+      @font-face {
+        font-family: "Fraunces";
+        src: url("./fraunces-800-latin.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        gap: 44px;
+        padding: 0 84px;
+        background: linear-gradient(160deg, #f4e6d4 0%, #eed3b4 55%, #e8c4a0 100%);
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+        position: relative;
+      }
+      .halo {
+        position: absolute;
+        left: 34px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 440px;
+        height: 440px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(180, 83, 31, 0.16) 0%, rgba(180, 83, 31, 0) 68%);
+      }
+      .mascot {
+        width: 372px;
+        height: 372px;
+        object-fit: contain;
+        flex: none;
+        position: relative;
+        filter: drop-shadow(0 26px 40px rgba(120, 60, 20, 0.3));
+      }
+      .copy {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+      }
+      .pill {
+        display: inline-block;
+        background: #b4531f;
+        color: #fff;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border-radius: 999px;
+        margin-bottom: 26px;
+      }
+      h1 {
+        font-family: "Fraunces", Georgia, serif;
+        font-weight: 800;
+        font-size: 100px;
+        line-height: 0.98;
+        color: #2c1810;
+        letter-spacing: -0.035em;
+        margin-bottom: 20px;
+      }
+      /* nowrap: the tagline must stay on one line — a lone orphaned word reads badly
+         at the size link previews render. Shrink the size if a longer one is set. */
+      p {
+        font-size: 34px;
+        font-weight: 600;
+        color: #6b4a38;
+        line-height: 1.25;
+        letter-spacing: -0.012em;
+        white-space: nowrap;
+      }
+      .rule {
+        width: 132px;
+        height: 9px;
+        border-radius: 99px;
+        background: #b4531f;
+        margin-top: 34px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="halo"></div>
+    <img class="mascot" src="../public/assets/compooper-mascot.png" alt="" />
+    <div class="copy">
+      <span class="pill">A sit, not a sprint</span>
+      <h1>Compooper</h1>
+      <p>Clean stalls when nature calls</p>
+      <div class="rule"></div>
+    </div>
+  </body>
+</html>
