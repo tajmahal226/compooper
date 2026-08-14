@@ -48,7 +48,7 @@ function Hero() {
             A sit, not a sprint
           </span>
           <h1 className="mb-4 text-[clamp(2.1rem,5vw,3.5rem)] font-extrabold">
-            Find a bathroom worth taking a dump in.
+            Find a bathroom worth taking a poo in.
           </h1>
           <p className="mb-6 max-w-[36ch] text-lg text-muted">
             Not the nearest — the nicest. Compooper ranks bathrooms by how clean and comfortable the

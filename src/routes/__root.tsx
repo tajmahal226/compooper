@@ -38,7 +38,7 @@ export const Route = createRootRoute({
       {
         property: "og:description",
         content:
-          "Find a bathroom worth taking a dump in. Ranked for a proper sit, not just the nearest stall.",
+          "Find a bathroom worth taking a poo in. Ranked for a proper sit, not just the nearest stall.",
       },
       ...(ogImage
         ? [
