@@ -21,7 +21,7 @@ export function AuthSlot({ compact = false }: { compact?: boolean }) {
   return (
     <Link
       to="/login"
-      className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-semibold text-slate hover:bg-card hover:text-ink"
+      className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-semibold text-muted hover:bg-card hover:text-ink"
     >
       Sign in
     </Link>

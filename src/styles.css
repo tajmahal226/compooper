@@ -309,7 +309,7 @@ h3 {
 .toilet-marker svg {
   width: 20px;
   height: 20px;
-  color: #fff;
+  color: var(--on-brand);
 }
 .toilet-marker.is-nearest svg {
   width: 24px;
@@ -320,17 +320,17 @@ h3 {
   height: 16px;
   border-radius: 50%;
   background: var(--brand);
-  border: 3px solid #fff;
-  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.18);
+  border: 3px solid var(--card);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--brand) 18%, transparent);
 }
 
 .loo-roll {
   width: 22px;
   height: 22px;
   border-radius: 6px 8px 6px 6px;
-  background: #e2e8f0;
+  background: color-mix(in srgb, var(--ink) 14%, var(--card));
   position: relative;
-  box-shadow: inset -3px 0 0 rgba(15, 23, 42, 0.08);
+  box-shadow: inset -3px 0 0 color-mix(in srgb, var(--ink) 10%, transparent);
 }
 .loo-roll::after {
   content: "";
@@ -340,7 +340,7 @@ h3 {
   width: 7px;
   height: 10px;
   border-radius: 50%;
-  border: 1.5px solid #94a3b8;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 38%, var(--card));
 }
 .loo-roll.is-filled {
   background: #f4d2a8;
@@ -350,12 +350,6 @@ h3 {
   border-color: #b45309;
 }
 
-html[data-theme="dark"] .loo-roll {
-  background: #334155;
-}
-html[data-theme="dark"] .loo-roll::after {
-  border-color: #64748b;
-}
 html[data-theme="dark"] .loo-roll.is-filled {
   background: #d6a06a;
 }
