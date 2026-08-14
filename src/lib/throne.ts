@@ -80,7 +80,7 @@ export function throneLabel(score: number): string {
   return "Emergency only";
 }
 
-export function dumpMood(meters: number): Mood {
+export function sitMood(meters: number): Mood {
   if (meters > 700)
     return { label: "Take your time", hint: "Scout the neighborhood.", tone: "calm" };
   if (meters > 350) return { label: "On the stroll", hint: "A civilized walk.", tone: "ok" };

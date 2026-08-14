@@ -24,7 +24,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Compooper finds bathrooms worth sitting in — ranked for cleanliness, privacy and a civilised dump, not just the nearest stall.",
+          "Compooper finds bathrooms worth sitting in — ranked for cleanliness, privacy and comfort, not just the nearest stall.",
       },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },

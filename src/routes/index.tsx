@@ -102,7 +102,7 @@ function Why() {
     },
     {
       icon: Armchair,
-      title: "Built for the dump",
+      title: "Built for the sit",
       copy: "Filter to upscale venues, seated cubicles or step-free access. Squat pans, urinals and porta-loos are pushed to the bottom where they belong.",
     },
     {

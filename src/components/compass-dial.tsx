@@ -1,6 +1,6 @@
 import { Navigation } from "lucide-react";
 import { formatDistance, formatWalk } from "@/lib/geo";
-import { dumpMood } from "@/lib/throne";
+import { sitMood } from "@/lib/throne";
 import { cn } from "@/lib/utils";
 
 export type NearbyTick = {
@@ -28,7 +28,7 @@ export function CompassDial({
 }: Props) {
   const relative = ((targetBearing - heading + 540) % 360) - 180;
   const ringRot = -heading;
-  const mood = dumpMood(distance);
+  const mood = sitMood(distance);
 
   return (
     <div
