@@ -47,7 +47,7 @@ export function mapsWalkUrl(to: LatLng): string {
 }
 
 /**
- * Shape of the compass copy ladder. Compooper's ladder is `dumpMood` in
+ * Shape of the compass copy ladder. Compooper's ladder is `sitMood` in
  * `throne.ts` — unhurried, because arriving fast is not the goal here.
  * Compisser's urgency ladder ("Clench Mode") does not apply and is not kept.
  */

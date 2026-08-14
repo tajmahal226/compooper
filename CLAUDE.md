@@ -151,7 +151,7 @@ Unknown values pass filters rather than failing them: most OSM entries are untag
 `seated` only excludes a _known_ squat or urinal. Filtering on absence would empty the map.
 
 Pure geo math lives in `src/lib/geo.ts` (haversine, bearing, distance/walk formatting).
-Compooper's copy ladder is `dumpMood` in `throne.ts`; `distanceMood` in `geo.ts` is Compisser's
+Compooper's copy ladder is `sitMood` in `throne.ts`; `distanceMood` in `geo.ts` is Compisser's
 urgency ladder, kept for parity.
 
 ### Database
