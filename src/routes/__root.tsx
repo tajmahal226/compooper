@@ -1,9 +1,4 @@
-import {
-  createRootRoute,
-  HeadContent,
-  Outlet,
-  Scripts,
-} from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { BrandProvider } from "@/lib/brand";
@@ -11,11 +6,11 @@ import appCss from "../styles.css?url";
 
 const APP_NAME = "Compooper";
 const host = import.meta.env.VITE_PUBLIC_HOSTNAME;
-const ogImage = host
-  ? `https://${host}/og.jpg`
-  : undefined;
+const ogImage = host ? `https://${host}/og.jpg` : undefined;
 
-const THEME_BOOT = `try{var t=localStorage.getItem("compisser-theme");if(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}`;
+// Runs before paint to avoid a light flash. Falls back to the Compisser-era key
+// so a forked install keeps its theme; `theme-toggle.tsx` writes the new one.
+const THEME_BOOT = `try{var t=localStorage.getItem("compooper-theme")||localStorage.getItem("compisser-theme");if(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}`;
 
 export const Route = createRootRoute({
   head: () => ({
@@ -71,7 +66,7 @@ export const Route = createRootRoute({
 
 function RootDocument() {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-brand="compooper" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

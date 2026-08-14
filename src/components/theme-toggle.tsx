@@ -1,6 +1,9 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/** Kept in sync with the pre-paint boot script in `__root.tsx`. */
+const THEME_KEY = "compooper-theme";
+
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
@@ -13,9 +16,10 @@ export function ThemeToggle() {
     setDark(next);
     document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) themeMeta.setAttribute("content", next ? "#0b1220" : "#dbeafe");
+    // Compooper's warm ground, not Compisser's blue.
+    if (themeMeta) themeMeta.setAttribute("content", next ? "#1a100c" : "#f4e6d4");
     try {
-      localStorage.setItem("compisser-theme", next ? "dark" : "light");
+      localStorage.setItem(THEME_KEY, next ? "dark" : "light");
     } catch {
       /* ignore */
     }

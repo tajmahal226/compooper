@@ -20,8 +20,7 @@ export function bearingDegrees(from: LatLng, to: LatLng): number {
   const φ2 = toRad(to.lat);
   const Δλ = toRad(to.lng - from.lng);
   const y = Math.sin(Δλ) * Math.cos(φ2);
-  const x =
-    Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
   return (toDeg(Math.atan2(y, x)) + 360) % 360;
 }
 
@@ -47,20 +46,13 @@ export function mapsWalkUrl(to: LatLng): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${to.lat},${to.lng}&travelmode=walking`;
 }
 
+/**
+ * Shape of the compass copy ladder. Compooper's ladder is `dumpMood` in
+ * `throne.ts` — unhurried, because arriving fast is not the goal here.
+ * Compisser's urgency ladder ("Clench Mode") does not apply and is not kept.
+ */
 export type Mood = {
   label: string;
   hint: string;
   tone: "calm" | "ok" | "close" | "urgent";
 };
-
-export function distanceMood(meters: number): Mood {
-  if (meters > 700)
-    return { label: "Stay Cool", hint: "You've got time.", tone: "calm" };
-  if (meters > 350)
-    return { label: "Keep Going", hint: "A comfortable stroll.", tone: "ok" };
-  if (meters > 140)
-    return { label: "You've Got This", hint: "Closing in.", tone: "ok" };
-  if (meters > 55)
-    return { label: "Getting Close", hint: "Almost there.", tone: "close" };
-  return { label: "Clench Mode", hint: "Do not pass go.", tone: "urgent" };
-}

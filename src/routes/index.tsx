@@ -51,8 +51,9 @@ function Hero() {
             Find a bathroom worth taking a dump in.
           </h1>
           <p className="mb-6 max-w-[36ch] text-lg text-muted">
-            Compisser gets you there in time. Compooper finds the stall you’d actually sit down in —
-            clean, private, and ranked for a proper, unhurried dump.
+            Not the nearest — the nicest. Compooper ranks bathrooms by how clean and comfortable the
+            sit will be, favouring hotels, department stores and proper restaurants over whatever
+            happens to be closest.
           </p>
           <div className="flex flex-col items-start gap-3">
             <Link
@@ -66,7 +67,7 @@ function Hero() {
               href="https://github.com/tajmahal226/compisser"
               className="text-sm font-semibold text-muted no-underline hover:text-navy"
             >
-              In a hurry? Compisser lives next door →
+              Just need to pee? Compisser lives next door →
             </a>
           </div>
         </div>
@@ -97,24 +98,27 @@ function Why() {
     {
       icon: Sparkles,
       title: "Nicest sit first",
-      copy: "We score each bathroom for a real sit — cleanliness, a proper stall, paper, and whether you’d linger. Nearest is a tie-break, not the whole story.",
+      copy: "Every bathroom gets a score out of 100 for the sit itself — the kind of venue, a seated cubicle, paper on the roll, and what other people reported. Distance is only the tie-break.",
     },
     {
       icon: Armchair,
       title: "Built for the dump",
-      copy: "Filter for a nice sit. Skip the pit toilets and the ones you’d only use in Clench Mode. This is the sister app for when you have a minute.",
+      copy: "Filter to upscale venues, seated cubicles or step-free access. Squat pans, urinals and porta-loos are pushed to the bottom where they belong.",
     },
     {
       icon: Wind,
       title: "Then follow the arrow",
-      copy: "Same compass as Compisser — it just points at the throne, not the closest hole in the wall. Walk there when you’re ready.",
+      copy: "The dial points at the throne you picked, not the nearest hole in the wall, and tells you how long the walk is. Go when you’re ready — nobody is rushing you.",
     },
   ];
   return (
     <section className="pb-12">
       <div className="site-wrap grid gap-4 sm:grid-cols-3">
         {cards.map(({ icon: Icon, title, copy }) => (
-          <article key={title} className="rounded-xl border border-card-border bg-card p-6 shadow-(--shadow-sm)">
+          <article
+            key={title}
+            className="rounded-xl border border-card-border bg-card p-6 shadow-(--shadow-sm)"
+          >
             <Icon className="mb-3 size-6 text-blue" />
             <h2 className="mb-2 text-lg font-bold">{title}</h2>
             <p className="m-0 text-[0.95rem] text-muted">{copy}</p>
@@ -135,7 +139,8 @@ function How() {
             Never settle for a grim stall again
           </h2>
           <p className="mx-auto mb-6 max-w-[42ch] text-[color:#e4c9b2]">
-            Open Compooper, allow location, and we’ll point you at the nicest bathroom nearby.
+            Allow location and we’ll rank every bathroom around you, then point the compass at the
+            best one.
           </p>
           <Link
             to="/map"

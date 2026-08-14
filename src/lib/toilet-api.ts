@@ -17,7 +17,7 @@ export const searchPlace = createServerFn({ method: "GET" })
     const res = await fetch(url, {
       headers: {
         Accept: "application/json",
-        "User-Agent": "CompisserToiletFinder/1.0 (web finder)",
+        "User-Agent": "Compooper/1.0 (bathroom finder; https://github.com/tajmahal226/compooper)",
       },
     });
     if (!res.ok) return [];

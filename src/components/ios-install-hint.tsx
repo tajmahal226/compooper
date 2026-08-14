@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useBrand } from "@/lib/brand";
 import { isIosDevice, isStandaloneApp } from "@/lib/device";
 
-const KEY = "compisser-a2hs-dismissed";
+const KEY = "compooper-a2hs-dismissed";
 
 export function IosInstallHint() {
   const brand = useBrand();
