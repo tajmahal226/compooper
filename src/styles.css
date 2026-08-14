@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "maplibre-gl/dist/maplibre-gl.css";
 
+/*
+ * Bind Tailwind's `dark:` variant to the in-app theme attribute. Without this it
+ * falls back to `prefers-color-scheme` and tracks the OS, so the handful of
+ * `dark:` classes in the app (the detail-sheet hero gradient, the error page)
+ * would ignore the theme toggle while every token below it obeys — light
+ * gradient on a dark card.
+ */
+@custom-variant dark (&:where(html[data-theme="dark"], html[data-theme="dark"] *));
+
 :root {
   --bg-top: #dbeafe;
   --bg-bottom: #d1fae5;
