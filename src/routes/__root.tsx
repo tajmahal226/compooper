@@ -5,8 +5,12 @@ import { BrandProvider } from "@/lib/brand";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Compooper";
-const host = import.meta.env.VITE_PUBLIC_HOSTNAME;
-const ogImage = host ? `https://${host}/og.jpg` : undefined;
+// The platform injects VITE_PUBLIC_HOSTNAME on its own deploys; plain Vercel
+// deploys do not, and the og:image block used to be skipped entirely when it was
+// unset — so pasting a link unfurled as text with no card at all. Fall back to
+// the production host so the card always has an absolute URL to point at.
+const host = import.meta.env.VITE_PUBLIC_HOSTNAME || "compooper.vercel.app";
+const ogImage = `https://${host}/og.jpg`;
 
 // Runs before paint to avoid a light flash. Falls back to the Compisser-era key
 // so a forked install keeps its theme; `theme-toggle.tsx` writes the new one.
@@ -40,13 +44,16 @@ export const Route = createRootRoute({
         content:
           "Find a bathroom worth taking a poo in. Ranked for a proper sit, not just the nearest stall.",
       },
-      ...(ogImage
-        ? [
-            { property: "og:image", content: ogImage },
-            { property: "og:image:width", content: "1200" },
-            { property: "og:image:height", content: "630" },
-          ]
-        : []),
+      { property: "og:image", content: ogImage },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:type", content: "image/jpeg" },
+      {
+        property: "og:image:alt",
+        content:
+          "Compooper — a crowned toilet mascot beside the words Clean stalls when nature calls",
+      },
+      { name: "twitter:image", content: ogImage },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/compooper-favicon.svg" },
