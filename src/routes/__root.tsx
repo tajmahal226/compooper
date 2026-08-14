@@ -20,7 +20,7 @@ export const Route = createRootRoute({
         name: "viewport",
         content: "width=device-width, initial-scale=1, viewport-fit=cover",
       },
-      { title: "Compooper — Nice bathrooms for a proper sit" },
+      { title: "Compooper — Clean stalls when nature calls" },
       {
         name: "description",
         content:
@@ -34,7 +34,7 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#f4e6d4" },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Compooper — Nice bathrooms for a proper sit" },
+      { property: "og:title", content: "Compooper — Clean stalls when nature calls" },
       {
         property: "og:description",
         content:

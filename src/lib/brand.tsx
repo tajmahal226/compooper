@@ -24,7 +24,7 @@ export const BRANDS: Record<BrandId, Brand> = {
   compooper: {
     id: "compooper",
     name: "Compooper",
-    tagline: "Nice bathrooms for a proper sit",
+    tagline: "Clean stalls when nature calls",
     home: "/",
     map: "/map",
     download: "/download",
