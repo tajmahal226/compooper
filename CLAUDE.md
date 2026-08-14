@@ -276,10 +276,15 @@ reach the browser.
 
 - `src/lib/multiplayer/` is unused template code — it expects an `/api/rtc` signaling relay
   this app does not implement.
-- Compisser has deploy scaffolding this fork lacks: `vercel.json`, an `engines: node 22.x` pin,
-  and a `vite.config.ts` guard that disables sign-in on builds with no broker credentials (so a
-  self-hosted deploy does not ship an always-failing sign-in button). Port them if this app is
-  deployed outside the Grok platform.
+- Deployed on Vercel as the `compooper` project, git-linked to this repo: pushing to `main`
+  builds and promotes to production. `vercel.json` pins `framework: null` because the Nitro
+  vercel preset emits Build Output API v3 into `.vercel/output` — let Vercel auto-detect and it
+  looks for Vite's `dist/` instead and ships a broken deploy.
+- Two pieces of Compisser's deploy scaffolding are still missing: the `engines: node 22.x` pin,
+  and the `vite.config.ts` guard that disables sign-in on builds with no broker credentials (so
+  a self-hosted deploy does not ship an always-failing sign-in button). The deployed app has no
+  `DATABASE_URL`, so it runs on the PGLite fallback inside a serverless function — ratings and
+  condition reports will not persist between invocations.
 - `public/og.jpg` is still **Compisser's** share card — blue/green, with the sister app's
   uncrowned mascot — so every social share of Compooper unfurls as the wrong app. Needs
   1200×630 warm-palette art with the crowned mascot, under 600 KB (`scripts/brand-check.mjs`
