@@ -38,10 +38,10 @@ export function CompassDial({
       )}
     >
       <div className="text-center">
-        <p className="text-[0.7rem] font-bold tracking-[0.14em] text-blue uppercase">{name}</p>
+        <p className="text-[0.7rem] font-bold tracking-[0.14em] text-brand uppercase">{name}</p>
         <p
           className={cn(
-            "mt-1 font-extrabold text-navy tabular-nums",
+            "mt-1 font-extrabold text-ink tabular-nums",
             compact ? "text-3xl" : "text-4xl",
           )}
         >
@@ -53,7 +53,7 @@ export function CompassDial({
       <div className={cn("relative", compact ? "size-[200px]" : "size-[240px] sm:size-[268px]")}>
         <div className="absolute inset-0 rounded-full border border-card-border bg-card/70 shadow-(--shadow-sm) backdrop-blur-sm">
           <div className="absolute inset-0" style={{ transform: `rotate(${ringRot}deg)` }}>
-            <span className="absolute top-2.5 left-1/2 -translate-x-1/2 text-[11px] font-extrabold text-navy">
+            <span className="absolute top-2.5 left-1/2 -translate-x-1/2 text-[11px] font-extrabold text-ink">
               N
             </span>
             <span className="absolute top-1/2 right-2.5 -translate-y-1/2 text-[11px] font-extrabold text-muted">
@@ -74,7 +74,7 @@ export function CompassDial({
             return (
               <span
                 key={tick.id}
-                className="absolute size-2.5 rounded-full bg-green-pin ring-2 ring-white"
+                className="absolute size-2.5 rounded-full bg-pin ring-2 ring-white"
                 style={{
                   left: "50%",
                   top: "50%",
@@ -92,7 +92,7 @@ export function CompassDial({
         >
           <Navigation
             className={cn(
-              "fill-blue text-blue drop-shadow-md",
+              "fill-brand text-brand drop-shadow-md",
               compact ? "size-20" : "size-24",
               mood.tone === "urgent" && "fill-red-500 text-red-500",
               mood.tone === "close" && "fill-orange-500 text-orange-500",
@@ -107,8 +107,8 @@ export function CompassDial({
           "rounded-full px-4 py-1.5 text-center text-sm font-extrabold",
           mood.tone === "urgent" && "bg-red-500/15 text-red-600",
           mood.tone === "close" && "bg-orange-500/15 text-orange-700",
-          mood.tone === "ok" && "bg-blue-soft text-blue",
-          mood.tone === "calm" && "bg-card text-navy",
+          mood.tone === "ok" && "bg-brand-soft text-brand",
+          mood.tone === "calm" && "bg-card text-ink",
         )}
       >
         {mood.label}

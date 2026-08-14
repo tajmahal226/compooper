@@ -11,9 +11,9 @@ export function SiteHeader({ current }: { current?: "home" | "map" | "about" | "
       <div className="site-wrap flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-3">
         <Link to={brand.home} className="flex items-center gap-2.5 no-underline">
           <img src={brand.mascot} alt="" className="size-8 object-contain" />
-          <span className="leading-tight font-extrabold text-navy">
+          <span className="leading-tight font-extrabold text-ink">
             {brand.name}
-            <small className="block text-[0.68rem] font-semibold tracking-wide text-slate-light">
+            <small className="block text-[0.68rem] font-semibold tracking-wide text-ink-faint">
               {brand.tagline}
             </small>
           </span>
@@ -23,15 +23,15 @@ export function SiteHeader({ current }: { current?: "home" | "map" | "about" | "
             to={brand.home}
             aria-current={current === "home" ? "page" : undefined}
             className={cn(
-              "hidden rounded-[10px] px-3 py-2 text-[0.95rem] font-semibold text-muted no-underline hover:bg-card hover:text-navy sm:inline-flex",
-              current === "home" && "bg-card text-navy",
+              "hidden rounded-[10px] px-3 py-2 text-[0.95rem] font-semibold text-muted no-underline hover:bg-card hover:text-ink sm:inline-flex",
+              current === "home" && "bg-card text-ink",
             )}
           >
             Home
           </Link>
           <Link
             to={brand.map}
-            className="inline-flex h-11 items-center rounded-[10px] bg-blue px-3 text-[0.9rem] font-extrabold text-white no-underline hover:bg-blue-dark"
+            className="inline-flex h-11 items-center rounded-[10px] bg-brand px-3 text-[0.9rem] font-extrabold text-on-brand no-underline hover:bg-brand-dark"
           >
             Find a throne
           </Link>
@@ -65,8 +65,8 @@ function NavLink({
       to={to}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-[10px] px-3 py-2 text-[0.95rem] font-semibold text-muted no-underline hover:bg-card hover:text-navy",
-        active && "bg-card text-navy",
+        "rounded-[10px] px-3 py-2 text-[0.95rem] font-semibold text-muted no-underline hover:bg-card hover:text-ink",
+        active && "bg-card text-ink",
         className,
       )}
     >

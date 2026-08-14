@@ -10,22 +10,46 @@
  */
 @custom-variant dark (&:where(html[data-theme="dark"], html[data-theme="dark"] *));
 
+/*
+ * Compooper palette: warm ground, brown ink, one burnt-orange accent.
+ *
+ * The colour IS the joke, and it is the PAGE, never the type. Compisser is
+ * yellow because it is about a pee; Compooper is warm brown because it is about
+ * the other thing. Played straight — a tan-and-cream ground with dark brown ink
+ * reads as leather, kraft paper and a good armchair, which is exactly the
+ * register for an app whose whole promise is an unhurried sit.
+ *
+ * TWO TRAPS, both of which shipped here before these tokens existed:
+ *
+ * 1. `--ink` INVERTS (dark brown in light, cream in dark) so `text-ink` stays
+ *    legible. That makes `bg-ink` a LIGHT panel in dark mode. A panel that must
+ *    stay dark in both themes is `--panel-invert` + `--panel-invert-fg`.
+ *    The landing CTA and the map view toggle both rendered near-white text on a
+ *    cream panel (1.15:1) before this.
+ * 2. `--brand` LIGHTENS in dark mode, so a hardcoded `text-white` on it drops
+ *    to 2.4:1. Text sitting on `--brand` uses `--on-brand`, which flips with it.
+ */
 :root {
-  --bg-top: #dbeafe;
-  --bg-bottom: #d1fae5;
-  --navy: #0f172a;
-  --slate: #475569;
-  --slate-light: #64748b;
-  --blue: #2563eb;
-  --blue-dark: #1d4ed8;
-  --blue-soft: color-mix(in srgb, #2563eb 12%, transparent);
-  --card: #ffffff;
-  --card-border: rgba(15, 23, 42, 0.07);
-  --fg: #0f172a;
-  --muted: #475569;
-  --green-pin: #16a34a;
-  --shadow: 0 10px 30px -12px rgba(37, 99, 235, 0.28);
-  --shadow-sm: 0 4px 14px -8px rgba(15, 23, 42, 0.22);
+  --bg-top: #f4e6d4;
+  --bg-bottom: #e8c4a0;
+  --ink: #2c1810;
+  --ink-soft: #6b4a38;
+  --ink-faint: #8a6754;
+  /* Darkened from the fork's #c45c26, which only reached 4.28:1 under white. */
+  --brand: #b4531f;
+  --brand-dark: #8f3f14;
+  --brand-soft: color-mix(in srgb, #b4531f 14%, transparent);
+  --on-brand: #ffffff;
+  --card: #fffaf4;
+  --card-border: rgba(44, 24, 16, 0.1);
+  --fg: #2c1810;
+  --muted: #6b4a38;
+  --pin: #b45309;
+  --panel-invert: #2c1810;
+  --panel-invert-fg: #f9f1e6;
+  --panel-invert-muted: #e4c9b2;
+  --shadow: 0 10px 30px -12px rgba(154, 67, 24, 0.34);
+  --shadow-sm: 0 4px 14px -8px rgba(44, 24, 16, 0.22);
   --radius-sm: 0.875rem;
   --radius-md: 1.125rem;
   --radius-lg: 1.375rem;
@@ -33,81 +57,53 @@
 }
 
 html[data-theme="dark"] {
-  --bg-top: #0b1220;
-  --bg-bottom: #0f1f1a;
-  --navy: #f1f5f9;
-  --slate: #cbd5e1;
-  --slate-light: #94a3b8;
-  --blue: #60a5fa;
-  --blue-dark: #3b82f6;
-  --blue-soft: color-mix(in srgb, #60a5fa 16%, transparent);
-  --card: #1e293b;
-  --card-border: rgba(148, 163, 184, 0.14);
-  --fg: #f1f5f9;
-  --muted: #cbd5e1;
-  --green-pin: #4ade80;
-  --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
-  --shadow-sm: 0 4px 14px -8px rgba(0, 0, 0, 0.45);
-}
-
-[data-brand="compooper"] {
-  --bg-top: #f4e6d4;
-  --bg-bottom: #e8c4a0;
-  --navy: #2c1810;
-  --slate: #6b4a38;
-  --slate-light: #8a6754;
-  --blue: #c45c26;
-  --blue-dark: #9a4318;
-  --blue-soft: color-mix(in srgb, #c45c26 14%, transparent);
-  --card: #fffaf4;
-  --card-border: rgba(44, 24, 16, 0.1);
-  --fg: #2c1810;
-  --muted: #6b4a38;
-  --green-pin: #b45309;
-  --shadow: 0 10px 30px -12px rgba(154, 67, 24, 0.34);
-  --shadow-sm: 0 4px 14px -8px rgba(44, 24, 16, 0.22);
-}
-
-/* Both attributes sit on <html> (see BrandProvider) — must be a compound
-   selector, not a descendant one, or the dark brand tokens never apply. */
-html[data-theme="dark"][data-brand="compooper"] {
   --bg-top: #1a100c;
   --bg-bottom: #2a1810;
-  --navy: #f6e8d8;
-  --slate: #e4c9b2;
-  --slate-light: #c4a288;
-  --blue: #e8955a;
-  --blue-dark: #d97736;
-  --blue-soft: color-mix(in srgb, #e8955a 18%, transparent);
+  --ink: #f6e8d8;
+  --ink-soft: #e4c9b2;
+  --ink-faint: #c4a288;
+  --brand: #e8955a;
+  --brand-dark: #d97736;
+  --brand-soft: color-mix(in srgb, #e8955a 18%, transparent);
+  /* Flips with --brand: dark ink on the lightened accent. */
+  --on-brand: #2c1810;
   --card: #2c1b14;
   --card-border: rgba(244, 230, 212, 0.12);
   --fg: #f6e8d8;
   --muted: #e4c9b2;
-  --green-pin: #fdba74;
+  --pin: #fdba74;
+  /* Still dark — that is the whole point of this token. */
+  --panel-invert: #17100b;
+  --panel-invert-fg: #f9f1e6;
+  --panel-invert-muted: #e4c9b2;
   --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
   --shadow-sm: 0 4px 14px -8px rgba(0, 0, 0, 0.45);
 }
 
-[data-brand="compooper"] h1,
-[data-brand="compooper"] h2,
-[data-brand="compooper"] h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
 }
 
 @theme inline {
   --color-bg-top: var(--bg-top);
   --color-bg-bottom: var(--bg-bottom);
-  --color-navy: var(--navy);
-  --color-slate: var(--slate);
-  --color-slate-light: var(--slate-light);
-  --color-blue: var(--blue);
-  --color-blue-dark: var(--blue-dark);
-  --color-blue-soft: var(--blue-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand: var(--on-brand);
   --color-card: var(--card);
   --color-card-border: var(--card-border);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
-  --color-green-pin: var(--green-pin);
+  --color-pin: var(--pin);
+  --color-panel-invert: var(--panel-invert);
+  --color-panel-invert-fg: var(--panel-invert-fg);
+  --color-panel-invert-muted: var(--panel-invert-muted);
   --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --font-display: "Fraunces", "Plus Jakarta Sans", Georgia, serif;
   --radius-sm: 0.875rem;
@@ -140,7 +136,7 @@ html[data-theme="dark"][data-brand="compooper"] {
   h1,
   h2,
   h3 {
-    color: var(--navy);
+    color: var(--ink);
     letter-spacing: -0.03em;
     text-wrap: balance;
     line-height: 1.12;
@@ -183,8 +179,8 @@ html[data-theme="dark"][data-brand="compooper"] {
   left: 10px;
   transform: translateY(-160%);
   padding: 10px 14px;
-  color: #fff;
-  background: var(--blue-dark);
+  color: var(--on-brand);
+  background: var(--brand-dark);
   border-radius: 10px;
   font-weight: 700;
 }
@@ -236,7 +232,7 @@ html[data-theme="dark"][data-brand="compooper"] {
   width: 72px;
   height: 8px;
   transform: translateX(-50%);
-  background: color-mix(in srgb, var(--navy) 18%, transparent);
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
   border-radius: 999px;
   z-index: 2;
 }
@@ -291,7 +287,7 @@ html[data-theme="dark"][data-brand="compooper"] {
   height: 44px;
   border: 3px solid var(--card);
   border-radius: 50%;
-  background: var(--slate-light);
+  background: var(--ink-faint);
   box-shadow: 0 6px 14px -6px rgba(15, 23, 42, 0.5);
   display: grid;
   place-items: center;
@@ -299,21 +295,21 @@ html[data-theme="dark"][data-brand="compooper"] {
   touch-action: manipulation;
 }
 .toilet-marker.is-upscale {
-  background: var(--blue);
+  background: var(--brand);
 }
 .toilet-marker.is-nearest {
   width: 50px;
   height: 50px;
-  background: var(--blue-dark);
+  background: var(--brand-dark);
 }
 .toilet-marker.is-selected {
-  outline: 4px solid color-mix(in srgb, var(--blue) 35%, transparent);
+  outline: 4px solid color-mix(in srgb, var(--brand) 35%, transparent);
   transform: translateY(-2px) scale(1.06);
 }
 .toilet-marker svg {
   width: 20px;
   height: 20px;
-  color: #fff;
+  color: var(--on-brand);
 }
 .toilet-marker.is-nearest svg {
   width: 24px;
@@ -323,18 +319,18 @@ html[data-theme="dark"][data-brand="compooper"] {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--blue);
-  border: 3px solid #fff;
-  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.18);
+  background: var(--brand);
+  border: 3px solid var(--card);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--brand) 18%, transparent);
 }
 
 .loo-roll {
   width: 22px;
   height: 22px;
   border-radius: 6px 8px 6px 6px;
-  background: #e2e8f0;
+  background: color-mix(in srgb, var(--ink) 14%, var(--card));
   position: relative;
-  box-shadow: inset -3px 0 0 rgba(15, 23, 42, 0.08);
+  box-shadow: inset -3px 0 0 color-mix(in srgb, var(--ink) 10%, transparent);
 }
 .loo-roll::after {
   content: "";
@@ -344,7 +340,7 @@ html[data-theme="dark"][data-brand="compooper"] {
   width: 7px;
   height: 10px;
   border-radius: 50%;
-  border: 1.5px solid #94a3b8;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 38%, var(--card));
 }
 .loo-roll.is-filled {
   background: #f4d2a8;
@@ -354,12 +350,6 @@ html[data-theme="dark"][data-brand="compooper"] {
   border-color: #b45309;
 }
 
-html[data-theme="dark"] .loo-roll {
-  background: #334155;
-}
-html[data-theme="dark"] .loo-roll::after {
-  border-color: #64748b;
-}
 html[data-theme="dark"] .loo-roll.is-filled {
   background: #d6a06a;
 }

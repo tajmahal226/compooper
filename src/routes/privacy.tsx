@@ -14,7 +14,7 @@ function PrivacyPage() {
       <main id="main-content" className="site-wrap py-14">
         <article className="mx-auto max-w-[640px] rounded-xl border border-card-border bg-card p-8 shadow-(--shadow-sm) sm:p-10">
           <h1 className="mb-4 text-[clamp(1.8rem,4vw,2.4rem)] font-extrabold">Privacy</h1>
-          <p className="text-sm text-slate-light">Last updated 13 August 2026</p>
+          <p className="text-sm text-ink-faint">Last updated 13 August 2026</p>
           <h2 className="mt-6 mb-2 text-lg font-bold">Location</h2>
           <p className="text-muted">
             Precise coordinates are used on your device to measure distance and direction to

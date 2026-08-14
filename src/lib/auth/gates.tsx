@@ -56,11 +56,7 @@ export function UserButton() {
   return (
     <div className="flex items-center gap-2">
       {user.profileImageUrl ? (
-        <img
-          src={user.profileImageUrl}
-          alt=""
-          className="h-8 w-8 rounded-full object-cover"
-        />
+        <img src={user.profileImageUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
       ) : (
         <span className="grid h-8 w-8 place-items-center rounded-full bg-black/10 text-sm font-medium dark:bg-white/20">
           {label.charAt(0).toUpperCase()}
@@ -71,7 +67,7 @@ export function UserButton() {
         <button
           type="button"
           onClick={() => void signOut()}
-          className="cursor-pointer text-sm font-semibold text-muted underline-offset-4 hover:text-navy hover:underline"
+          className="cursor-pointer text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
         >
           Sign out
         </button>

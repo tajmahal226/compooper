@@ -17,7 +17,7 @@ const FAQS: { q: string; a: ReactNode }[] = [
         tie-break here, so we need a rough origin to measure from. Your precise location is used
         entirely on your device — it is never stored as a movement history. Place searches send only
         the words you type to Nominatim. See the{" "}
-        <Link to="/privacy" className="font-semibold text-blue">
+        <Link to="/privacy" className="font-semibold text-brand">
           privacy page
         </Link>
         .
@@ -59,7 +59,7 @@ const FAQS: { q: string; a: ReactNode }[] = [
         Compisser is the emergency sister — nearest toilet, now, when you just need to pee.
         Compooper is this app: bathrooms ranked for a proper sit, where clean beats close and a
         department store beats a park block. Compisser lives at{" "}
-        <a href="https://github.com/tajmahal226/compisser" className="font-semibold text-blue">
+        <a href="https://github.com/tajmahal226/compisser" className="font-semibold text-brand">
           github.com/tajmahal226/compisser
         </a>
         .

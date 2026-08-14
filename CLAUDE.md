@@ -207,24 +207,41 @@ Client side: `useCurrentUser()` / `useCurrentUserState()` and the `SignedIn` / `
 ### Styling
 
 Tailwind v4, no config file — design tokens are CSS custom properties in `src/styles.css`,
-re-exported to Tailwind via `@theme inline` (`--card` → `bg-card`, `--muted` → `text-muted`).
+re-exported to Tailwind via `@theme inline` (`--brand` → `bg-brand`/`text-brand`).
 Prefer the token classes over raw hex so both themes stay correct.
 
-Three layers set those tokens, in cascade order: `:root` (Compisser's blue/green base),
-`html[data-theme="dark"]`, then `[data-brand="compooper"]` and
-`html[data-theme="dark"] [data-brand="compooper"]` — the brand attribute is set by
-`BrandProvider` in `src/lib/brand.tsx`, which also holds the app's copy (CTA labels, tagline,
-default sort, sister-app blurb).
+The palette is **warm ground, brown ink, one burnt-orange accent** — and the colour is the
+joke. Compisser is yellow because it is about a pee; Compooper is brown because it is about
+the other thing, played straight as leather and kraft paper rather than as a gag. Warm brown
+is the PAGE, never the type.
 
-**The token names are inherited from Compisser and lie.** Under the compooper brand `--blue`
-is burnt orange (`#c45c26`), `--navy` is dark brown, and `--green-pin` is amber. Read the value
-before assuming a color; do not "correct" a `text-blue` class to a blue Tailwind palette color.
+**Two traps, both of which shipped here before the current tokens existed.** Verified with a
+scripted contrast pass over both themes:
+
+1. **`--ink` inverts** (dark brown in light, cream in dark) so `text-ink` stays legible —
+   which makes `bg-ink` a _light_ panel in dark mode. A panel that must stay dark in both
+   themes is `bg-panel-invert` + `text-panel-invert-fg` / `text-panel-invert-muted`. The
+   landing CTA and the map view toggle both rendered near-white text on cream at **1.15:1**
+   before this.
+2. **`--brand` lightens in dark**, so a hardcoded `text-white` on it fell to **2.37:1**. Text
+   sitting on `--brand` uses `text-on-brand`, which flips with it. `--brand` itself is
+   `#b4531f`, darkened from the fork's `#c45c26` because that only reached 4.28:1 under white.
+
+Every fg/bg pair on the landing and map pages now clears 5:1 in both themes. If you touch the
+palette, re-check rather than assuming — these two failures were invisible in light mode.
+
+Tokens are named for their role (`--ink`, `--brand`, `--pin`), matching the sister repo's
+scheme. They live on `:root`, so the warm palette is the base rather than an override; the
+`data-brand` attribute on `<html>` is still set by `BrandProvider` but no longer gates colour.
 
 Dark mode is a `data-theme` attribute set by an inline boot script in `__root.tsx` reading
-`localStorage["compisser-theme"]` (the key is shared with the sister app) before paint.
+`localStorage["compooper-theme"]` (falling back to the Compisser-era key once) before paint.
 Tailwind's `dark:` variant is bound to that attribute by `@custom-variant` at the top of
 `styles.css` — without it, `dark:` classes fall back to `prefers-color-scheme` and track the OS
-instead of the in-app toggle, which mixes light gradients into dark cards.
+instead of the in-app toggle.
+
+Map markers are styled in `styles.css` from the same tokens and highlight `is-upscale`, not
+accessibility — the venue class is what you scan the map for here.
 
 Radix primitives and `lucide-react` are installed and available; many listed deps (recharts,
 cmdk, vaul, react-hook-form, zustand, …) are template baggage and unused here.
