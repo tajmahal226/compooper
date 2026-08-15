@@ -12,6 +12,7 @@ import {
   Map as MapIcon,
   Navigation,
   Search,
+  SlidersHorizontal,
   Users,
   X,
 } from "lucide-react";
@@ -73,9 +74,63 @@ export function FinderApp() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [mobileDetail, setMobileDetail] = useState(false);
   const [liveData, setLiveData] = useState(false);
-  const [sheetOpen, setSheetOpen] = useState(false);
   const [motionDenied, setMotionDenied] = useState(false);
   const fetchOriginRef = useRef<LatLng | null>(null);
+
+  // Mobile chrome. The old layout stacked four independently positioned bars at
+  // hardcoded offsets (52px / 168px / 198px), so anything that grew overlapped
+  // whatever sat below it. Search and filters now collapse behind single
+  // controls, and everything lives in one flow stack instead.
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  /** Bottom-sheet snap points, phone only. */
+  const [snap, setSnap] = useState<"peek" | "half" | "full">("peek");
+  const sheetOpen = snap !== "peek";
+  const sheetRef = useRef<HTMLElement | null>(null);
+  const dragRef = useRef<{ startY: number; startH: number } | null>(null);
+  const [dragH, setDragH] = useState<number | null>(null);
+
+  const snapHeight = useCallback((s: "peek" | "half" | "full") => {
+    const vh = typeof window === "undefined" ? 800 : window.innerHeight;
+    if (s === "peek") return 148;
+    if (s === "half") return Math.round(vh * 0.52);
+    return Math.max(240, vh - 84);
+  }, []);
+
+  const onDragStart = useCallback((e: React.PointerEvent) => {
+    const el = sheetRef.current;
+    if (!el) return;
+    dragRef.current = { startY: e.clientY, startH: el.getBoundingClientRect().height };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }, []);
+
+  const onDragMove = useCallback((e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const vh = window.innerHeight;
+    // Dragging up grows the sheet, so the delta is inverted.
+    setDragH(Math.min(vh - 84, Math.max(96, d.startH - (e.clientY - d.startY))));
+  }, []);
+
+  const onDragEnd = useCallback(() => {
+    const d = dragRef.current;
+    if (!d) return;
+    dragRef.current = null;
+    const h = dragH;
+    setDragH(null);
+    // A tap (no movement) toggles rather than snapping back to where it started.
+    if (h == null) {
+      setSnap((s) => (s === "peek" ? "half" : "peek"));
+      return;
+    }
+    const options: Array<"peek" | "half" | "full"> = ["peek", "half", "full"];
+    let best = options[0]!;
+    for (const o of options) {
+      if (Math.abs(snapHeight(o) - h) < Math.abs(snapHeight(best) - h)) best = o;
+    }
+    setSnap(best);
+  }, [dragH, snapHeight]);
 
   useEffect(() => {
     setFavorites(loadFavorites());
@@ -234,8 +289,7 @@ export function FinderApp() {
     }
     const short = hit.label.split(",")[0] ?? hit.label;
     await loadAround({ lat: hit.lat, lng: hit.lng }, short);
-    setSheetOpen(true);
-    setSheetOpen(true);
+    setSnap("half");
   }
 
   function locateMe() {
@@ -263,7 +317,7 @@ export function FinderApp() {
       }
     }
     setView("compass");
-    setSheetOpen(false);
+    setSnap("peek");
     setMobileDetail(false);
   }
 
@@ -295,8 +349,10 @@ export function FinderApp() {
   function pick(id: string) {
     setSelectedId(id);
     setMobileDetail(true);
-    setSheetOpen(false);
+    setSnap("peek");
   }
+
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   const filterDefs: { key: keyof Filters; label: string; icon: typeof Accessibility }[] = [
     { key: "niceSit", label: "Worth a sit", icon: Armchair },
@@ -346,58 +402,155 @@ export function FinderApp() {
         </div>
       )}
 
-      <div className="pointer-events-none absolute top-[max(8px,env(safe-area-inset-top))] right-3 left-3 z-20 flex items-center justify-between gap-2 lg:hidden">
-        <Link
-          to={brand.home}
-          className="pointer-events-auto inline-flex h-11 items-center gap-2 rounded-full border border-card-border bg-card/95 px-3 font-extrabold text-ink no-underline shadow-(--shadow-sm) backdrop-blur-xl"
-        >
-          <img src={brand.mascot} alt="" className="size-6 object-contain" />
-          {brand.name}
-        </Link>
-        <div className="pointer-events-auto flex h-11 overflow-hidden rounded-full border border-card-border bg-card/95 shadow-(--shadow-sm) backdrop-blur-xl">
-          <button
-            type="button"
-            onClick={() => setView("map")}
-            className={cn(
-              "inline-flex h-11 items-center gap-1 px-3.5 text-sm font-bold",
-              view === "map" ? "bg-panel-invert text-panel-invert-fg" : "text-ink",
-            )}
-          >
-            <MapIcon className="size-4" /> Map
-          </button>
-          <button
-            type="button"
-            onClick={() => void enableCompass()}
-            className={cn(
-              "inline-flex h-11 items-center gap-1 px-3.5 text-sm font-bold",
-              view === "compass" ? "bg-panel-invert text-panel-invert-fg" : "text-ink",
-            )}
-          >
-            <Compass className="size-4" /> Compass
-          </button>
+      {/*
+        ONE flow stack for all phone chrome. Every bar used to be positioned
+        independently at a hardcoded offset, so a taller search card slid under
+        the status pill. A flex column cannot overlap itself.
+      */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex flex-col gap-2 px-3 pt-[max(10px,env(safe-area-inset-top))] lg:hidden">
+        <div className="flex items-center gap-2">
+          {searchOpen ? (
+            <form
+              className="pointer-events-auto flex h-12 flex-1 items-center gap-1.5 rounded-full border border-card-border bg-card/95 pr-1.5 pl-3 shadow-(--shadow) backdrop-blur-xl"
+              onSubmit={onSearch}
+              role="search"
+            >
+              <label className="sr-only" htmlFor="place-query">
+                Search a town, postcode or station
+              </label>
+              <Search className="size-4 shrink-0 text-muted" />
+              <input
+                id="place-query"
+                autoFocus
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={brand.searchPlaceholder}
+                enterKeyHint="search"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                className="min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-ink-faint"
+              />
+              <button
+                type="submit"
+                className="h-11 shrink-0 rounded-full bg-brand px-4 text-sm font-bold text-on-brand"
+              >
+                Go
+              </button>
+              <button
+                type="button"
+                aria-label="Close search"
+                onClick={() => setSearchOpen(false)}
+                className="grid size-11 shrink-0 place-items-center rounded-full text-muted"
+              >
+                <X className="size-4" />
+              </button>
+            </form>
+          ) : (
+            <>
+              <Link
+                to={brand.home}
+                aria-label={`${brand.name} home`}
+                className="pointer-events-auto grid size-12 shrink-0 place-items-center rounded-full border border-card-border bg-card/95 shadow-(--shadow-sm) backdrop-blur-xl"
+              >
+                <img src={brand.mascot} alt="" className="size-7 object-contain" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className="pointer-events-auto flex h-12 min-w-0 flex-1 items-center gap-2 rounded-full border border-card-border bg-card/95 px-4 text-left text-sm font-semibold text-muted shadow-(--shadow-sm) backdrop-blur-xl"
+              >
+                <Search className="size-4 shrink-0" />
+                <span className="truncate">{brand.searchPlaceholder}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                aria-label={`Filters${activeFilterCount ? `, ${activeFilterCount} active` : ""}`}
+                className={cn(
+                  "pointer-events-auto relative grid size-12 shrink-0 place-items-center rounded-full border shadow-(--shadow-sm) backdrop-blur-xl",
+                  activeFilterCount
+                    ? "border-brand bg-brand text-on-brand"
+                    : "border-card-border bg-card/95 text-ink",
+                )}
+              >
+                <SlidersHorizontal className="size-5" />
+                {activeFilterCount > 0 && (
+                  <span className="absolute -top-1 -right-1 grid size-5 place-items-center rounded-full bg-ink text-[10px] font-extrabold text-card">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+            </>
+          )}
         </div>
+
+        {status && view === "map" && !searchOpen && (
+          <p className="pointer-events-none m-0 inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-card-border bg-card/90 px-3 py-1.5 text-[11px] font-semibold text-muted shadow-(--shadow-sm) backdrop-blur-xl">
+            <span
+              className={cn(
+                "size-1.5 shrink-0 rounded-full",
+                loading ? "animate-pulse bg-amber-400" : "bg-pin",
+              )}
+            />
+            <span className="truncate">{status}</span>
+          </p>
+        )}
+
+        {view === "compass" && motionDenied && (
+          <div className="pointer-events-auto rounded-2xl border border-card-border bg-card p-3 text-sm shadow-(--shadow)">
+            <p className="m-0 font-bold text-ink">Turn on motion access</p>
+            <p className="mt-1 mb-0 text-muted">
+              iPhone: Settings → Safari → Motion &amp; Orientation Access, then tap the compass
+              again.
+            </p>
+          </div>
+        )}
       </div>
 
+      {/* Floating right-edge controls, the way map apps do it — out of the way
+          of both the top stack and the sheet. */}
+      <div
+        className="pointer-events-none absolute right-3 z-20 flex flex-col gap-2 lg:hidden"
+        style={{ bottom: `calc(${dragH ?? snapHeight(snap)}px + 12px)` }}
+      >
+        <button
+          type="button"
+          onClick={() => (view === "map" ? void enableCompass() : setView("map"))}
+          aria-label={view === "map" ? "Switch to compass" : "Switch to map"}
+          className="pointer-events-auto grid size-12 place-items-center rounded-full border border-card-border bg-card/95 text-ink shadow-(--shadow) backdrop-blur-xl"
+        >
+          {view === "map" ? <Compass className="size-5" /> : <MapIcon className="size-5" />}
+        </button>
+        <button
+          type="button"
+          onClick={locateMe}
+          aria-label="Use my location"
+          className="pointer-events-auto grid size-12 place-items-center rounded-full border border-card-border bg-card/95 text-ink shadow-(--shadow) backdrop-blur-xl"
+        >
+          <LocateFixed className="size-5" />
+        </button>
+      </div>
+
+      {/* Desktop keeps the original single control card. */}
       <section
         className={cn(
-          "pointer-events-auto absolute top-[max(60px,calc(env(safe-area-inset-top)+52px))] right-3 left-3 z-10 max-w-[400px] overflow-hidden rounded-[18px] border border-card-border bg-card/95 p-2 shadow-(--shadow) backdrop-blur-xl lg:top-3 lg:left-4",
-          view === "compass" && "hidden lg:block",
+          "pointer-events-auto absolute top-3 left-4 z-10 hidden max-w-[400px] overflow-hidden rounded-[18px] border border-card-border bg-card/95 p-2 shadow-(--shadow) backdrop-blur-xl lg:block",
+          view === "compass" && "lg:block",
         )}
       >
         <form className="flex items-center gap-1.5" onSubmit={onSearch} role="search">
-          <label className="sr-only" htmlFor="place-query">
+          <label className="sr-only" htmlFor="place-query-lg">
             Search a town, postcode or station
           </label>
           <Search className="ml-2 size-4 shrink-0 text-muted" />
           <input
-            id="place-query"
+            id="place-query-lg"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={brand.searchPlaceholder}
             enterKeyHint="search"
             autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
             className="min-w-0 flex-1 bg-transparent py-2.5 text-ink outline-none placeholder:text-ink-faint"
           />
           <button
@@ -420,7 +573,7 @@ export function FinderApp() {
             <label
               key={key}
               className={cn(
-                "inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-bold",
+                "inline-flex h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-3 text-xs font-bold",
                 filters[key]
                   ? "border-brand bg-brand-soft text-brand"
                   : "border-card-border bg-card text-muted",
@@ -440,13 +593,13 @@ export function FinderApp() {
             <button
               type="button"
               onClick={() => setFilters(EMPTY_FILTERS)}
-              className="h-9 rounded-xl px-2.5 text-xs font-bold text-brand"
+              className="h-11 rounded-xl px-3 text-xs font-bold text-brand"
             >
               Clear
             </button>
           )}
         </div>
-        <div className="mt-1.5 hidden gap-1 lg:flex">
+        <div className="mt-1.5 flex gap-1">
           <button
             type="button"
             onClick={() => setView("map")}
@@ -471,7 +624,7 @@ export function FinderApp() {
       </section>
 
       {status && view === "map" && (
-        <div className="pointer-events-none absolute top-[calc(env(safe-area-inset-top)+168px)] right-3 left-3 z-10 max-w-[400px] lg:top-[148px] lg:left-4">
+        <div className="pointer-events-none absolute top-[148px] left-4 z-10 hidden max-w-[400px] lg:block">
           <p className="inline-flex items-center gap-2 rounded-full border border-card-border bg-card/90 px-3 py-1.5 text-[11px] font-semibold text-muted shadow-(--shadow-sm)">
             <span
               className={cn(
@@ -484,31 +637,101 @@ export function FinderApp() {
         </div>
       )}
 
-      {view === "compass" && motionDenied && (
-        <div className="absolute top-[calc(env(safe-area-inset-top)+198px)] right-3 left-3 z-10 max-w-[400px] rounded-2xl border border-card-border bg-card p-3 text-sm shadow-(--shadow) lg:left-4">
-          <p className="m-0 font-bold text-ink">Turn on motion access</p>
-          <p className="mt-1 mb-0 text-muted">
-            iPhone: Settings → Safari → Motion & Orientation Access, then tap Compass again.
-          </p>
+      {/* Filters, phone only — a real sheet with 44px rows instead of a strip of
+          36px chips that were genuinely hard to hit. */}
+      {filtersOpen && (
+        <div className="absolute inset-0 z-40 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close filters"
+            onClick={() => setFiltersOpen(false)}
+            className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 max-h-[80dvh] overflow-y-auto rounded-t-[22px] border border-card-border bg-card p-3 shadow-(--shadow)"
+            style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="m-0 text-lg font-extrabold text-ink">Filters</h2>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                aria-label="Close filters"
+                className="grid size-11 place-items-center rounded-full border border-card-border text-ink"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <div className="flex flex-col">
+              {filterDefs.map(({ key, label, icon: Icon }) => (
+                <label
+                  key={key}
+                  className="flex min-h-[52px] cursor-pointer items-center gap-3 border-t border-card-border px-1 text-sm font-bold text-ink"
+                >
+                  <span
+                    className={cn(
+                      "grid size-9 shrink-0 place-items-center rounded-xl",
+                      filters[key] ? "bg-brand text-on-brand" : "bg-brand-soft text-brand",
+                    )}
+                  >
+                    <Icon className="size-4" />
+                  </span>
+                  <span className="flex-1">{label}</span>
+                  <input
+                    type="checkbox"
+                    checked={filters[key]}
+                    onChange={() => setFilters((f) => ({ ...f, [key]: !f[key] }))}
+                    className="size-6 accent-[var(--brand)]"
+                  />
+                </label>
+              ))}
+            </div>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setFilters(EMPTY_FILTERS)}
+                className="h-12 flex-1 rounded-xl border border-card-border font-bold text-ink"
+              >
+                Clear all
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                className="h-12 flex-[2] rounded-xl bg-brand font-extrabold text-on-brand"
+              >
+                Show {ranked.length} {ranked.length === 1 ? "throne" : "thrones"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
       {view === "map" && (
         <aside
+          ref={sheetRef}
           className={cn(
-            "pointer-events-auto absolute right-0 bottom-0 left-0 z-10 flex flex-col rounded-t-[22px] border border-card-border bg-card/95 shadow-(--shadow) backdrop-blur-xl transition-[height] duration-200 ease-out lg:top-auto lg:right-auto lg:bottom-4 lg:left-4 lg:h-auto lg:max-h-[calc(100%-220px)] lg:w-[400px] lg:rounded-[20px]",
-            sheetOpen ? "h-[min(72dvh,640px)]" : "h-[168px]",
+            "pointer-events-auto absolute right-0 bottom-0 left-0 z-10 flex flex-col rounded-t-[22px] border border-card-border bg-card/95 shadow-(--shadow) backdrop-blur-xl lg:top-auto lg:right-auto lg:bottom-4 lg:left-4 lg:h-auto lg:max-h-[calc(100%-220px)] lg:w-[400px] lg:rounded-[20px]",
+            dragH == null && "transition-[height] duration-200 ease-out",
           )}
-          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          style={{
+            height: `${dragH ?? snapHeight(snap)}px`,
+            paddingBottom: "env(safe-area-inset-bottom)",
+          }}
         >
+          {/* Drag to any of peek / half / full; tap still toggles. Pointer events
+              rather than touch events so it works with a mouse too. */}
           <button
             type="button"
-            className="flex w-full flex-col items-center pt-2 pb-1 lg:pointer-events-none"
-            onClick={() => setSheetOpen((v) => !v)}
+            onPointerDown={onDragStart}
+            onPointerMove={onDragMove}
+            onPointerUp={onDragEnd}
+            onPointerCancel={onDragEnd}
+            className="flex w-full shrink-0 touch-none flex-col items-center justify-center pt-2.5 pb-1.5 lg:pointer-events-none lg:touch-auto"
+            style={{ minHeight: 44 }}
             aria-expanded={sheetOpen}
-            aria-label={sheetOpen ? "Collapse toilet list" : "Expand toilet list"}
+            aria-label={sheetOpen ? "Collapse throne list" : "Expand throne list"}
           >
-            <span className="h-1 w-10 rounded-full bg-ink-faint/40" />
+            <span className="h-1.5 w-11 rounded-full bg-ink-faint/45" />
             <ChevronDown
               className={cn(
                 "mt-1 size-4 text-ink-faint transition-transform lg:hidden",
@@ -660,14 +883,14 @@ export function FinderApp() {
       />
 
       {mobileDetail && selected && (
-        <div className="absolute inset-x-0 bottom-0 top-[18%] z-20 flex flex-col overflow-hidden rounded-t-[22px] border border-card-border bg-card shadow-(--shadow) lg:hidden">
+        <div className="absolute inset-x-0 top-[max(10px,env(safe-area-inset-top))] bottom-0 z-40 flex flex-col overflow-hidden rounded-t-[22px] border border-card-border bg-card shadow-(--shadow) lg:hidden">
           <button
             type="button"
             onClick={() => setMobileDetail(false)}
             aria-label="Close details"
-            className="absolute top-[max(12px,env(safe-area-inset-top))] left-3 z-10 grid size-11 place-items-center rounded-full border border-card-border bg-card"
+            className="absolute top-3 left-3 z-10 grid size-12 place-items-center rounded-full border border-card-border bg-card/95 text-ink shadow-(--shadow-sm) backdrop-blur-xl"
           >
-            <X className="size-4" />
+            <X className="size-5" />
           </button>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <DetailBody
@@ -684,7 +907,9 @@ export function FinderApp() {
         </div>
       )}
 
-      {view === "map" && <IosInstallHint />}
+      {/* Only when nothing else owns the screen — it used to sit at z-20 above
+          the detail sheet and cover the venue name. */}
+      {view === "map" && !mobileDetail && snap === "peek" && <IosInstallHint />}
     </div>
   );
 }

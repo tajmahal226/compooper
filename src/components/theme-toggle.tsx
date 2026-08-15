@@ -30,7 +30,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      className="grid size-10 place-items-center rounded-full border border-card-border bg-card text-ink shadow-(--shadow-sm) transition-transform duration-150 hover:-translate-y-px"
+      className="grid size-11 place-items-center rounded-full border border-card-border bg-card text-ink shadow-(--shadow-sm) transition-transform duration-150 hover:-translate-y-px"
     >
       {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
     </button>

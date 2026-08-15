@@ -20,10 +20,11 @@ function AboutPage() {
             A better way to pick a bathroom.
           </h1>
           <p className="text-muted">
-            Compooper ranks the bathrooms around you by whether they are worth sitting in, then
-            points a compass at the winner. Cleanliness is the axis: a hotel, a high-end department
-            store or a proper restaurant beats a council block in a park, even when the park one is
-            closer.
+            Compooper is a <strong>compass</strong> for finding somewhere to <strong>poo</strong> —
+            hence the name. It ranks the bathrooms around you by whether they are worth sitting in,
+            then swings the needle to the winner. Cleanliness is the axis: a hotel, a high-end
+            department store or a proper restaurant beats a council block in a park, even when the
+            park one is closer.
           </p>
           <p className="text-muted">
             Compooper is free, with no ads and no subscriptions. Needing a few unhurried minutes is

@@ -242,7 +242,7 @@ h3 {
   position: relative;
   height: calc(100dvh - 64px);
   min-height: 520px;
-  --sheet-h: 168px;
+  --sheet-h: 148px; /* peek — keep in sync with snapHeight() in finder-app */
 }
 .finder-page-mobile .finder-root {
   height: 100dvh;
@@ -256,7 +256,7 @@ h3 {
   }
 }
 .finder-root.is-sheet-open {
-  --sheet-h: min(72dvh, 640px);
+  --sheet-h: min(52dvh, 520px);
 }
 .finder-root.is-compass {
   --sheet-h: 0px;

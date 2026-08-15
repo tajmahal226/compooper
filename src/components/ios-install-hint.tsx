@@ -22,15 +22,15 @@ export function IosInstallHint() {
   if (!show) return null;
 
   return (
-    <aside className="pointer-events-auto absolute right-3 bottom-[calc(var(--sheet-h)+12px)] left-3 z-20 max-w-[400px] rounded-2xl border border-card-border bg-card p-3 shadow-(--shadow) lg:hidden">
+    <aside className="pointer-events-auto absolute right-[72px] bottom-[calc(var(--sheet-h)+12px)] left-3 z-10 rounded-2xl border border-card-border bg-card/95 p-2.5 shadow-(--shadow) backdrop-blur-xl lg:hidden">
       <div className="flex items-start gap-2">
-        <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
+        <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
           <Share className="size-4" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="m-0 text-sm font-extrabold text-ink">Add to Home Screen</p>
           <p className="mt-0.5 mb-0 text-xs text-muted">
-            Tap Share, then <strong>Add to Home Screen</strong> — {brand.name} opens like an app.
+            Tap Share → <strong>Add to Home Screen</strong>.
           </p>
         </div>
         <button

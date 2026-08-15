@@ -12,27 +12,31 @@ export function SiteFooter() {
         </div>
         <nav
           aria-label="Footer"
-          className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-muted"
+          className="flex flex-wrap items-center gap-x-4 gap-y-0 text-sm font-semibold text-muted"
         >
-          <Link to="/" className="hover:text-ink">
+          <Link to="/" className="inline-flex min-h-11 items-center hover:text-ink">
             Home
           </Link>
-          <Link to="/map" className="hover:text-ink">
+          <Link to="/map" className="inline-flex min-h-11 items-center hover:text-ink">
             Find a throne
           </Link>
-          <a href={brand.sister.href} className="hover:text-ink" rel="noreferrer">
+          <a
+            href={brand.sister.href}
+            className="inline-flex min-h-11 items-center hover:text-ink"
+            rel="noreferrer"
+          >
             {brand.sister.name}
           </a>
-          <Link to="/about" className="hover:text-ink">
+          <Link to="/about" className="inline-flex min-h-11 items-center hover:text-ink">
             About & data
           </Link>
-          <Link to="/help" className="hover:text-ink">
+          <Link to="/help" className="inline-flex min-h-11 items-center hover:text-ink">
             Help
           </Link>
-          <Link to="/privacy" className="hover:text-ink">
+          <Link to="/privacy" className="inline-flex min-h-11 items-center hover:text-ink">
             Privacy
           </Link>
-          <Link to="/download" className="hover:text-ink">
+          <Link to="/download" className="inline-flex min-h-11 items-center hover:text-ink">
             Download
           </Link>
         </nav>
