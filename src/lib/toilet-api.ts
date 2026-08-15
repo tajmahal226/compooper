@@ -38,43 +38,57 @@ export const fetchToiletsNear = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<{ toilets: Toilet[]; areaLabel: string; live: boolean }> => {
     const lat = Number(data.lat);
     const lng = Number(data.lng);
-    const radiusKm = Math.min(8, Math.max(0.6, data.radiusKm ?? 2.4));
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       return { ...fallbackNear(51.5074, -0.1278), live: false };
     }
-    const d = radiusKm / 111;
-    const s = lat - d;
-    const n = lat + d;
-    const w = lng - d;
-    const e = lng + d;
-    const query = `[out:json][timeout:18];(node["amenity"="toilets"](${s},${w},${n},${e});way["amenity"="toilets"](${s},${w},${n},${e}););out center tags;`;
-    // One TOTAL budget across all mirrors, not 8s each. Three sequential 8s
-    // timeouts could hold the request open for 24s — past serverless limits,
-    // which surfaces client-side as a rejected refresh rather than a fallback.
+
+    // One TOTAL budget across mirrors and passes, not 8s per attempt — three
+    // sequential 8s timeouts could hold the request open for 24s, past
+    // serverless limits, which surfaces client-side as a rejected refresh.
     const deadline = Date.now() + 8000;
-    for (const endpoint of OVERPASS_URLS) {
-      const remaining = deadline - Date.now();
-      if (remaining < 1200) break;
-      try {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-          body: `data=${encodeURIComponent(query)}`,
-          signal: AbortSignal.timeout(Math.min(4000, remaining)),
-        });
-        if (!res.ok) continue;
-        const text = await res.text();
-        if (text.trimStart().startsWith("<")) continue;
-        const json = JSON.parse(text) as { elements?: unknown[] };
-        const toilets = (json.elements ?? [])
-          .map((el) => parseOverpassElement(el as Parameters<typeof parseOverpassElement>[0]))
-          .filter((t): t is Toilet => t != null);
-        if (toilets.length > 0) {
-          return { toilets, areaLabel: "Nearby", live: true };
+
+    const sweep = async (radiusKm: number): Promise<Toilet[] | null> => {
+      const d = radiusKm / 111;
+      const s = lat - d;
+      const n = lat + d;
+      const w = lng - d;
+      const e = lng + d;
+      const query = `[out:json][timeout:18];(node["amenity"="toilets"](${s},${w},${n},${e});way["amenity"="toilets"](${s},${w},${n},${e}););out center tags;`;
+      for (const endpoint of OVERPASS_URLS) {
+        const remaining = deadline - Date.now();
+        if (remaining < 1200) break;
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+            body: `data=${encodeURIComponent(query)}`,
+            signal: AbortSignal.timeout(Math.min(4000, remaining)),
+          });
+          if (!res.ok) continue;
+          const text = await res.text();
+          if (text.trimStart().startsWith("<")) continue;
+          const json = JSON.parse(text) as { elements?: unknown[] };
+          const toilets = (json.elements ?? [])
+            .map((el) => parseOverpassElement(el as Parameters<typeof parseOverpassElement>[0]))
+            .filter((t): t is Toilet => t != null);
+          if (toilets.length > 0) return toilets;
+        } catch {
+          // try next endpoint
         }
-      } catch {
-        // try next endpoint
       }
+      return null;
+    };
+
+    const radiusKm = Math.min(8, Math.max(0.6, data.radiusKm ?? 2.4));
+    let toilets = await sweep(radiusKm);
+    // A thin first pass in the suburbs is worth one wider look — an app about
+    // choosing between bathrooms needs more than a stall or two to choose from.
+    if (toilets && toilets.length < 4 && radiusKm < 6 && Date.now() < deadline - 2500) {
+      const wider = await sweep(6);
+      if (wider && wider.length > toilets.length) toilets = wider;
+    }
+    if (toilets) {
+      return { toilets, areaLabel: "Nearby", live: true };
     }
     return { ...fallbackNear(lat, lng), live: false };
   });
