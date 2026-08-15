@@ -110,14 +110,14 @@ export function DetailBody({
     <div>
       <div
         className={
-          "relative flex h-[200px] items-end justify-center overflow-hidden rounded-b-[38%] bg-linear-to-b from-orange-200 to-amber-600 dark:from-stone-800 dark:to-amber-950"
+          "relative flex h-[132px] items-end justify-center overflow-hidden rounded-b-[38%] lg:h-[200px] bg-linear-to-b from-orange-200 to-amber-600 dark:from-stone-800 dark:to-amber-950"
         }
       >
         <span className="absolute top-6 right-8 size-10 rounded-full bg-amber-300 shadow-[0_0_0_10px_rgba(251,191,36,0.18)]" />
         <img
           src={brand.mascot}
           alt=""
-          className="relative z-1 h-[160px] object-contain drop-shadow-lg"
+          className="relative z-1 h-[104px] object-contain drop-shadow-lg lg:h-[160px]"
         />
       </div>
       <div className="p-5">
