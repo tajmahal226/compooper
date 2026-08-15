@@ -48,13 +48,19 @@ export const fetchToiletsNear = createServerFn({ method: "GET" })
     const w = lng - d;
     const e = lng + d;
     const query = `[out:json][timeout:18];(node["amenity"="toilets"](${s},${w},${n},${e});way["amenity"="toilets"](${s},${w},${n},${e}););out center tags;`;
+    // One TOTAL budget across all mirrors, not 8s each. Three sequential 8s
+    // timeouts could hold the request open for 24s — past serverless limits,
+    // which surfaces client-side as a rejected refresh rather than a fallback.
+    const deadline = Date.now() + 8000;
     for (const endpoint of OVERPASS_URLS) {
+      const remaining = deadline - Date.now();
+      if (remaining < 1200) break;
       try {
         const res = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
           body: `data=${encodeURIComponent(query)}`,
-          signal: AbortSignal.timeout(8000),
+          signal: AbortSignal.timeout(Math.min(4000, remaining)),
         });
         if (!res.ok) continue;
         const text = await res.text();
