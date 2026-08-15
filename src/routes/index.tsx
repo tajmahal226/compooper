@@ -45,15 +45,15 @@ function Hero() {
             className="mascot-float mb-3 block w-[96px] drop-shadow-lg"
           />
           <span className="mb-4 inline-block rounded-full bg-brand-soft px-3 py-1.5 text-[0.78rem] font-bold tracking-[0.08em] text-brand uppercase">
-            A sit, not a sprint
+            Compass&nbsp;+&nbsp;pooper
           </span>
           <h1 className="mb-4 text-[clamp(2.1rem,5vw,3.5rem)] font-extrabold">
             Find a bathroom worth taking a poo in.
           </h1>
           <p className="mb-6 max-w-[36ch] text-lg text-muted">
-            Not the nearest — the nicest. Compooper ranks bathrooms by how clean and comfortable the
-            sit will be, favouring hotels, department stores and proper restaurants over whatever
-            happens to be closest.
+            Yes, it is a compass for finding somewhere to poo. It ranks the bathrooms around you by
+            how clean and comfortable the sit will be — favouring hotels, department stores and
+            proper restaurants over whatever happens to be closest — then points you at the winner.
           </p>
           <div className="flex flex-col items-start gap-3">
             <Link
@@ -107,8 +107,8 @@ function Why() {
     },
     {
       icon: Wind,
-      title: "Then follow the arrow",
-      copy: "The dial points at the throne you picked, not the nearest hole in the wall, and tells you how long the walk is. Go when you’re ready — nobody is rushing you.",
+      title: "Then follow the compass",
+      copy: "The needle swings to the throne you picked — not the nearest hole in the wall — and tells you how long the walk is. Hold the phone flat and go when you’re ready.",
     },
   ];
   return (
