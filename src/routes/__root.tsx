@@ -59,7 +59,10 @@ export const Route = createRootRoute({
       { rel: "icon", type: "image/svg+xml", href: "/compooper-favicon.svg" },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/assets/compooper-mascot.png" },
+      // A real 180x180 with a solid warm background — iOS composites transparent
+      // icons onto black, and the platform's injected fallback used to win with
+      // the Grok logo. /__grok/icon-180.png now carries the same art.
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
