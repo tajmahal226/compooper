@@ -76,6 +76,10 @@ export function FinderApp() {
   const [liveData, setLiveData] = useState(false);
   const [motionDenied, setMotionDenied] = useState(false);
   const fetchOriginRef = useRef<LatLng | null>(null);
+  // False after a place search: the GPS watcher must stop stealing the origin
+  // back, or the app yanks to the user's location seconds after they searched
+  // somewhere else. "Use my location" turns it back on.
+  const followGpsRef = useRef(true);
   // Mirror for the stable loadAround callback — its closure never sees state.
   const toiletsRef = useRef<Toilet[]>([]);
   useEffect(() => {
@@ -156,10 +160,15 @@ export function FinderApp() {
           : `Showing curated picks in ${res.areaLabel}`,
       );
       setOrigin(pt);
+      // Stats are enrichment, not the payload. Awaiting them inside this try
+      // meant a stats hiccup (PGLite booting in a cold serverless function)
+      // threw AFTER the toilets had loaded fine — flagging "couldn't reach
+      // live data" on a perfectly good map.
       const ids = res.toilets.map((t) => t.id);
       if (ids.length) {
-        const s = await getToiletStats({ data: ids });
-        setStats(s);
+        void getToiletStats({ data: ids })
+          .then(setStats)
+          .catch(() => undefined);
       }
     } catch {
       // A failed REFRESH must never teleport the app. This used to reset to
@@ -195,7 +204,7 @@ export function FinderApp() {
         void loadAround(start);
         watchId = navigator.geolocation.watchPosition(
           (p) => {
-            if (cancelled) return;
+            if (cancelled || !followGpsRef.current) return;
             const next = { lat: p.coords.latitude, lng: p.coords.longitude };
             setOrigin(next);
             const last = fetchOriginRef.current;
@@ -301,6 +310,9 @@ export function FinderApp() {
       return;
     }
     const short = hit.label.split(",")[0] ?? hit.label;
+    // Browsing somewhere else now — the GPS watcher keeps ticking, but it must
+    // not steal the origin back (see followGpsRef).
+    followGpsRef.current = false;
     await loadAround({ lat: hit.lat, lng: hit.lng }, short);
     setSnap("half");
   }
@@ -308,12 +320,22 @@ export function FinderApp() {
   function locateMe() {
     if (!navigator.geolocation) return;
     setStatus("Locating…");
+    followGpsRef.current = true;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         void loadAround({ lat: pos.coords.latitude, lng: pos.coords.longitude });
       },
-      () => setStatus("Location is off — search a place instead"),
-      { enableHighAccuracy: true, timeout: 10_000 },
+      (err) =>
+        setStatus(
+          err.code === err.PERMISSION_DENIED
+            ? "Location is off — search a place instead"
+            : "Couldn’t get a GPS fix — try again in the open",
+        ),
+      // maximumAge matters: without it this demands a FRESH fix, which on a
+      // phone means up to 10s of "Locating…" and then a timeout indoors — and
+      // the old error copy blamed permissions for it. The watcher is already
+      // running; a 30s-old fix is exactly as good as the boot-time one.
+      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 30_000 },
     );
   }
 
