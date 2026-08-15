@@ -280,11 +280,11 @@ reach the browser.
   builds and promotes to production. `vercel.json` pins `framework: null` because the Nitro
   vercel preset emits Build Output API v3 into `.vercel/output` — let Vercel auto-detect and it
   looks for Vite's `dist/` instead and ships a broken deploy.
-- Two pieces of Compisser's deploy scaffolding are still missing: the `engines: node 22.x` pin,
-  and the `vite.config.ts` guard that disables sign-in on builds with no broker credentials (so
-  a self-hosted deploy does not ship an always-failing sign-in button). The deployed app has no
-  `DATABASE_URL`, so it runs on the PGLite fallback inside a serverless function — ratings and
-  condition reports will not persist between invocations.
+- One piece of Compisser's deploy scaffolding is still missing: the `vite.config.ts` guard that
+  disables sign-in on builds with no broker credentials (so a self-hosted deploy does not ship an
+  always-failing sign-in button). The deployed app has no `DATABASE_URL`, so it runs on the
+  PGLite fallback inside a serverless function — ratings and condition reports will not persist
+  between invocations.
 - `public/og.jpg` is the link-preview card, generated from `scripts/og-card.html` by
   `node scripts/og-card.mjs`. Rerun it after changing the wordmark or tagline, and keep the
   output under 600 KB (`scripts/brand-check.mjs` gates the size). `og:image` needs an absolute
