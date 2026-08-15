@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { isUpscale, type Toilet } from "@/lib/toilets";
-import type { LatLng } from "@/lib/geo";
+import { haversineMeters, type LatLng } from "@/lib/geo";
 
 const STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
@@ -64,9 +64,16 @@ export function MapCanvas({ origin, toilets, selectedId, nearestId, onSelect }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const lastEaseRef = useRef<LatLng | null>(null);
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !origin) return;
+    // watchPosition ticks every few seconds with a few metres of GPS jitter.
+    // Easing on every tick has the camera perpetually drifting and yanking the
+    // map back while the user is trying to pan. Only follow real movement.
+    const last = lastEaseRef.current;
+    if (last && haversineMeters(last, origin) < 40) return;
+    lastEaseRef.current = origin;
     map.easeTo({ center: [origin.lng, origin.lat], duration: 700 });
   }, [origin?.lat, origin?.lng]);
 

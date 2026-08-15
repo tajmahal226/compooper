@@ -39,7 +39,7 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { throneLabel, throneScore } from "@/lib/throne";
 import {
   EMPTY_FILTERS,
-  FALLBACK_CITIES,
+  fallbackNear,
   hasActiveFilters,
   isUpscale,
   matchesFilters,
@@ -76,6 +76,11 @@ export function FinderApp() {
   const [liveData, setLiveData] = useState(false);
   const [motionDenied, setMotionDenied] = useState(false);
   const fetchOriginRef = useRef<LatLng | null>(null);
+  // Mirror for the stable loadAround callback — its closure never sees state.
+  const toiletsRef = useRef<Toilet[]>([]);
+  useEffect(() => {
+    toiletsRef.current = toilets;
+  }, [toilets]);
 
   // Mobile chrome. The old layout stacked four independently positioned bars at
   // hardcoded offsets (52px / 168px / 198px), so anything that grew overlapped
@@ -157,12 +162,20 @@ export function FinderApp() {
         setStats(s);
       }
     } catch {
-      const fb = FALLBACK_CITIES[0]!;
-      setToilets(fb.toilets);
-      setAreaLabel(fb.label);
+      // A failed REFRESH must never teleport the app. This used to reset to
+      // FALLBACK_CITIES[0] — London — so when the auto-refetch after a GPS
+      // settle (or any flaky request) failed, the list, markers and compass
+      // all snapped from wherever the user actually was to London. Keep what
+      // we have; only fall back — near the USER — when the map would
+      // otherwise be empty.
       setLiveData(false);
       setOrigin(pt);
-      setStatus("Couldn’t reach live data — showing curated picks");
+      if (toiletsRef.current.length === 0) {
+        const fb = fallbackNear(pt.lat, pt.lng);
+        setToilets(fb.toilets);
+        setAreaLabel(fb.areaLabel);
+      }
+      setStatus("Couldn’t reach live data — keeping the last results");
     } finally {
       setLoading(false);
     }
